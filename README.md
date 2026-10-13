@@ -2,15 +2,18 @@
 
 AI study helper for **Sparx Maths** and **Seneca Learning** (Chrome extension).
 
-Website: https://projectbergmannstrasse.github.io/s-solver/
+Website: https://semtexhigh.github.io/s-solver/
 
 | Page | Link |
 |---|---|
-| Privacy policy | https://projectbergmannstrasse.github.io/s-solver/#privacy |
-| Credits | https://projectbergmannstrasse.github.io/s-solver/#credits |
-| Support (wallets) | https://projectbergmannstrasse.github.io/s-solver/#wallets |
-| GitHub | https://projectbergmannstrasse.github.io/s-solver/#github |
+| Terms of service | https://semtexhigh.github.io/s-solver/#terms |
+| Privacy policy | https://semtexhigh.github.io/s-solver/#privacy |
+| Credits | https://semtexhigh.github.io/s-solver/#credits |
+| Support (wallets) | https://semtexhigh.github.io/s-solver/#wallets |
+| GitHub | https://semtexhigh.github.io/s-solver/#github |
 
 No servers, no analytics, no ads. Everything S Solver stores stays in your browser; questions are sent only to the AI provider you choose, with your own API key.
 
-Built by [ProjectBergmannstrasse](https://github.com/ProjectBergmannstrasse). Sparx mode is based on Solver for Sparx 1.7.
+Built by [Semtexhigh](https://github.com/Semtexhigh). Sparx mode is based on Solver for Sparx 1.7.
+
+© 2026 Semtexhigh. All rights reserved. Not open source: personal use only. No copying, modifying, redistributing or deobfuscating — see the [Terms of Service](https://semtexhigh.github.io/s-solver/#terms).

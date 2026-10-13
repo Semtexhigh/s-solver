@@ -45,7 +45,7 @@ h1{margin:0;font-size:26px;font-weight:900;letter-spacing:.14em;line-height:1.1;
 .status span:last-child{margin-left:auto;color:var(--txm);letter-spacing:.06em}
 
 /* tabs */
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surf);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;backdrop-filter:blur(10px)}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surf);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;backdrop-filter:blur(10px)}
 .tab{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 6px 10px;background:none;border:0;border-bottom:2px solid transparent;color:var(--txm);font:700 13px var(--font);letter-spacing:.02em;cursor:pointer;transition:all .18s}
 .tab svg{width:15px;height:15px;flex-shrink:0}
 .tab:hover{color:var(--txd);background:var(--acdim)}
@@ -157,10 +157,10 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
       </div>
       <div>
         <h1>S SOLVER</h1>
-        <div class="tag"><span class="badge">v3.1</span><span>Sparx</span><span>·</span><span>Seneca</span></div>
+        <div class="tag"><span class="badge">v3.4</span><span>Sparx</span><span>·</span><span>Seneca</span></div>
       </div>
       <div class="hero-cta">
-        <a class="btn gh" href="https://github.com/ProjectBergmannstrasse" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>GitHub</a>
+        <a class="btn gh" href="https://github.com/Semtexhigh" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>GitHub</a>
       </div>
     </div>
     <div class="status"><span class="dot"></span><span>AI study helper for Sparx Maths &amp; Seneca Learning</span><span>No tracking · No ads</span></div>
@@ -168,6 +168,7 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
 
   <nav class="tabs" role="tablist" aria-label="Sections">
     <button class="tab" role="tab" id="tab-privacy" data-tab="privacy" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><path d="M9 12l2 2 4-4"/></svg><span>Privacy</span></button>
+    <button class="tab" role="tab" id="tab-terms" data-tab="terms" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>Terms</span></button>
     <button class="tab" role="tab" id="tab-credits" data-tab="credits" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>Credits</span></button>
     <button class="tab" role="tab" id="tab-wallets" data-tab="wallets" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20M16 15h2M6 6V4.5A1.5 1.5 0 0 1 7.5 3H18"/></svg><span>Wallets</span></button>
     <button class="tab" role="tab" id="tab-github" data-tab="github" aria-selected="false"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg><span>GitHub</span></button>
@@ -220,12 +221,58 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
     </div>
   </section>
 
+  <!-- TERMS -->
+  <section class="panel" id="terms" role="tabpanel" aria-labelledby="tab-terms">
+    <div class="card">
+      <h2>Terms of Service</h2>
+      <p class="muted">Effective 13 October 2026 · applies to the S Solver browser extension, its source code and this website</p>
+      <p>S Solver is © 2026 Semtexhigh. All rights reserved. S Solver is not open source. Its code, panel design, Seneca mode, answer memory, icons and this website belong to Semtexhigh. Installing or using S Solver means you accept these terms.</p>
+      <span class="pill ok">Personal use only · No copying · No deobfuscation</span>
+    </div>
+
+    <div class="sec">What you may do</div>
+    <div class="card">
+      <h3><span class="ic t-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg></span>Use it for yourself</h3>
+      <p>You may install S Solver and use it for your own personal, non-commercial study, as it is published by Semtexhigh. This permission is personal to you and cannot be passed on, sold or shared.</p>
+    </div>
+
+    <div class="sec">What is not allowed</div>
+    <div class="card tablewrap">
+      <table class="keytable">
+        <tr><td>Deobfuscating</td><td>No deobfuscating, unminifying, decompiling, beautifying or reverse engineering any part of S Solver, and no trying to recover its original source code.</td></tr>
+        <tr><td>Copying</td><td>No copying S Solver's code, design or text, in whole or in part, into any other project, extension, app or website.</td></tr>
+        <tr><td>Modifying</td><td>No changing, patching, rebranding or removing the credits, the copyright notice or these terms.</td></tr>
+        <tr><td>Sharing</td><td>No re-uploading, mirroring or redistributing S Solver or modified versions of it, including on the Chrome Web Store, GitHub or file-sharing sites.</td></tr>
+        <tr><td>Selling</td><td>No selling, renting or charging for S Solver or access to it, and no using it in a paid service.</td></tr>
+        <tr><td>Misuse</td><td>No using S Solver to harm, overload or break the Sparx, Seneca or AI provider services, or to get into other people's accounts.</td></tr>
+      </table>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3><span class="ic t-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></span>Breaking these terms</h3>
+        <p>If you break these terms, your permission to use S Solver ends straight away and you must delete every copy you have. Semtexhigh may ask for copies to be taken down wherever they appear.</p>
+      </div>
+      <div class="card">
+        <h3><span class="ic t-cy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg></span>Third-party parts</h3>
+        <p>The open-source libraries listed under Credits keep their own licences, and Sparx mode is built on Solver for Sparx 1.7. These terms cover everything else in S Solver.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="ic t-am"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>Your responsibility</h3>
+      <p>You are responsible for how you use S Solver, including following your school's rules and the terms of Sparx, Seneca and your AI provider. S Solver is provided as it is, with no warranty, and Semtexhigh is not liable for any loss or consequence from using it. S Solver is not made by or linked to Sparx Learning or Seneca Learning.</p>
+      <h3 style="margin-top:12px">Changes and contact</h3>
+      <p>These terms may be updated; the new version and its date will appear on this page. Questions: <span style="font-family:var(--mono);color:var(--tx);user-select:all">67ace67a@gmail.com</span>.</p>
+    </div>
+  </section>
+
   <!-- CREDITS -->
   <section class="panel" id="credits" role="tabpanel" aria-labelledby="tab-credits">
     <div class="author">
-      <div class="avatar"><img src="https://github.com/ProjectBergmannstrasse.png?size=160" alt="ProjectBergmannstrasse" loading="lazy"></div>
-      <div><div class="author-name">ProjectBergmannstrasse</div><div class="author-sub">Design, panel UI, Seneca mode &amp; answer memory</div></div>
-      <a class="btn" href="https://github.com/ProjectBergmannstrasse" target="_blank" rel="noopener">GitHub →</a>
+      <div class="avatar"><img src="https://github.com/Semtexhigh.png?size=160" alt="Semtexhigh" loading="lazy"></div>
+      <div><div class="author-name">Semtexhigh</div><div class="author-sub">Design, panel UI, Seneca mode &amp; answer memory</div></div>
+      <a class="btn" href="https://github.com/Semtexhigh" target="_blank" rel="noopener">GitHub →</a>
     </div>
 
     <div class="sec">Built on</div>
@@ -284,21 +331,21 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
   <!-- GITHUB -->
   <section class="panel" id="github" role="tabpanel" aria-labelledby="tab-github">
     <div class="card gh-card">
-      <div class="avatar"><img src="https://github.com/ProjectBergmannstrasse.png?size=200" alt="ProjectBergmannstrasse" loading="lazy"></div>
-      <div class="author-name" style="font-size:20px">ProjectBergmannstrasse</div>
-      <div class="gh-handle">github.com/ProjectBergmannstrasse</div>
+      <div class="avatar"><img src="https://github.com/Semtexhigh.png?size=200" alt="Semtexhigh" loading="lazy"></div>
+      <div class="author-name" style="font-size:20px">Semtexhigh</div>
+      <div class="gh-handle">github.com/Semtexhigh</div>
       <p style="max-width:44ch">Browser extensions, study helpers and small web apps. Follow along for updates to S Solver.</p>
-      <a class="btn solid" href="https://github.com/ProjectBergmannstrasse" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>Visit GitHub account</a>
+      <a class="btn solid" href="https://github.com/Semtexhigh" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>Visit GitHub account</a>
     </div>
     <div class="sec">More projects</div>
     <div class="repos">
-      <a class="repo" href="https://github.com/ProjectBergmannstrasse/s-solver" target="_blank" rel="noopener"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5"/></svg>s-solver</b><span>This page and S Solver release notes</span></a>
-      <a class="repo" href="https://github.com/ProjectBergmannstrasse/FinanceCalc" target="_blank" rel="noopener"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5"/></svg>FinanceCalc</b><span>My Money: a personal finance app</span></a>
-      <a class="repo" href="https://github.com/ProjectBergmannstrasse/AutoClicker" target="_blank" rel="noopener"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5"/></svg>AutoClicker</b><span>Macro recorder and player</span></a>
+      <a class="repo" href="https://github.com/Semtexhigh/s-solver" target="_blank" rel="noopener"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5"/></svg>s-solver</b><span>This page and S Solver release notes</span></a>
+      <a class="repo" href="https://github.com/Semtexhigh/FinanceCalc" target="_blank" rel="noopener"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5"/></svg>FinanceCalc</b><span>My Money: a personal finance app</span></a>
+      <a class="repo" href="https://github.com/Semtexhigh/AutoClicker" target="_blank" rel="noopener"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5"/></svg>AutoClicker</b><span>Macro recorder and player</span></a>
     </div>
   </section>
 
-  <footer>S Solver · ProjectBergmannstrasse · 2026</footer>
+  <footer>S Solver · © 2026 Semtexhigh · All rights reserved · <a href="#terms">Terms</a></footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 

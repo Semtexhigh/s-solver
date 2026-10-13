@@ -14,6 +14,6 @@ Website: https://semtexhigh.github.io/s-solver/
 
 No servers, no analytics, no ads. Everything S Solver stores stays in your browser; questions are sent only to the AI provider you choose, with your own API key.
 
-Built by [Semtexhigh](https://github.com/Semtexhigh). Sparx mode is based on Solver for Sparx 1.7.
+Built by [Semtexhigh](https://github.com/Semtexhigh).
 
 © 2026 Semtexhigh. All rights reserved. Not open source: personal use only. No copying, modifying, redistributing or deobfuscating — see the [Terms of Service](https://semtexhigh.github.io/s-solver/#terms).

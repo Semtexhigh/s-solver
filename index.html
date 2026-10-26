@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>S Solver</title>
-<meta name="description" content="S Solver — AI study helper for Sparx Maths and Seneca Learning. Privacy policy, credits, support wallets and GitHub.">
+<meta name="description" content="S Solver — AI study helper for Sparx Maths, Seneca Learning and Dr Frost Maths. Privacy policy, terms, credits, support wallets and GitHub.">
 <link rel="icon" href="icon128.png">
 <style>
 /* Layout: glowing header card with the shield, a 4-tab bar, one content panel per tab */
@@ -157,13 +157,13 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
       </div>
       <div>
         <h1>S SOLVER</h1>
-        <div class="tag"><span class="badge">v3.4</span><span>Sparx</span><span>·</span><span>Seneca</span></div>
+        <div class="tag"><span class="badge">v4.6</span><span>Sparx</span><span>·</span><span>Seneca</span><span>·</span><span>Dr Frost</span></div>
       </div>
       <div class="hero-cta">
         <a class="btn gh" href="https://github.com/Semtexhigh" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>GitHub</a>
       </div>
     </div>
-    <div class="status"><span class="dot"></span><span>AI study helper for Sparx Maths &amp; Seneca Learning</span><span>No tracking · No ads</span></div>
+    <div class="status"><span class="dot"></span><span>AI study helper for Sparx Maths, Seneca Learning &amp; Dr Frost Maths</span><span>No tracking · No ads</span></div>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Sections">
@@ -178,8 +178,8 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
   <section class="panel active" id="privacy" role="tabpanel" aria-labelledby="tab-privacy">
     <div class="card">
       <h2>Privacy Policy</h2>
-      <p class="muted">Effective 30 September 2026 · applies to the S Solver browser extension (v3.1 and later)</p>
-      <p>S Solver has no servers and no accounts. Everything it keeps stays in your own browser. The only time data leaves your computer is when you ask the AI a question, and then it goes straight to the AI company you picked, using your own API key.</p>
+      <p class="muted">Effective 26 October 2026 · applies to the S Solver browser extension (v4.6 and later)</p>
+      <p>S Solver has no servers and no accounts. Everything it keeps stays in your own browser. The only time data leaves your computer is when a question is sent to an online AI, and then it goes straight to the AI company you picked, using your own API key. The built-in maths solver, Chrome&#39;s built-in AI and Ollama all run on your own computer and send nothing.</p>
       <span class="pill ok">✓ No analytics · no tracking · no ads · nothing sold</span>
     </div>
 
@@ -187,10 +187,11 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
     <div class="card tablewrap">
       <table class="keytable">
         <tr><td>API key &amp; model</td><td>The key you paste in the settings and the AI model you choose. Kept in Chrome's local extension storage.</td></tr>
-        <tr><td>Answer history</td><td>Sparx answers you solved, so you can look them up for bookwork checks.</td></tr>
+        <tr><td>Answer history</td><td>Sparx and Dr Frost answers, so you can look them up for bookwork checks and see what was right or wrong.</td></tr>
         <tr><td>Answer memory</td><td>Seneca answers that Seneca itself marked correct, so repeat questions are answered right.</td></tr>
         <tr><td>Word bank</td><td>Words you look up and save on Seneca.</td></tr>
-        <tr><td>Settings &amp; stats</td><td>Theme, panel size, dock side and the counters in the stats row.</td></tr>
+        <tr><td>Times-tables reader</td><td>Small pictures of the digits in the times-tables games, so the reader learns the game&#39;s font. No screenshots of the page are kept.</td></tr>
+        <tr><td>Settings &amp; stats</td><td>Theme, panel size, dock side, S button visibility, timing settings and the counters in the stats row.</td></tr>
       </table>
     </div>
 
@@ -198,17 +199,17 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
     <div class="grid2">
       <div class="card">
         <h3><span class="ic t-pu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>When you ask for help</h3>
-        <p>The question text, its answer options and the reading text shown with it. For Sparx picture questions, an image of the question area. For a word look-up, the word and its sentence.</p>
+        <p>The question text, its answer options and the reading text shown with it. For picture questions on Sparx or Dr Frost, an image of the question area (and, if the reader cannot read a times-tables sum, an image of that sum). For a word look-up, the word and its sentence. Questions the built-in solver answers are not sent anywhere.</p>
       </div>
       <div class="card">
         <h3><span class="ic t-cy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>Where it goes</h3>
-        <p>Only to the provider you chose: <a href="https://groq.com/privacy-policy/" target="_blank" rel="noopener">Groq</a>, <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">Anthropic</a> or <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Gemini</a>. Their privacy policies cover what they do with it.</p>
+        <p>Only to the provider you chose: <a href="https://groq.com/privacy-policy/" target="_blank" rel="noopener">Groq</a>, <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">Anthropic</a> or <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Gemini</a>. Their privacy policies cover what they do with it. If you choose Ollama or Chrome&#39;s built-in AI, the question stays on your computer. With no API key, a picture of the question may be sent to <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Lens</a> &mdash; the same as right-clicking it and choosing &ldquo;Search with Google Lens&rdquo;.</p>
       </div>
     </div>
 
     <div class="card">
       <h3><span class="ic t-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg></span>Where it runs</h3>
-      <p>S Solver only works on Sparx (sparxmaths.uk, sparxmaths.com, sparx-learning.com) and Seneca (app.senecalearning.com). It cannot read any other website.</p>
+      <p>S Solver only works on Sparx (sparxmaths.uk, sparxmaths.com, sparx-learning.com), Seneca (app.senecalearning.com) and Dr Frost (drfrost.org). It cannot read any other website. If you choose Ollama, it also talks to Ollama on your own computer (localhost). With no API key it can open Google Lens (lens.google.com) to read a question picture.</p>
       <h3 style="margin-top:12px"><span class="ic t-am"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span>Deleting your data</h3>
       <p>Use "Reset stats" and "Clear all" in the panel, or remove the extension from <span style="font-family:var(--mono);font-size:13px">chrome://extensions</span>. Removing it deletes everything it stored.</p>
       <h3 style="margin-top:12px"><span class="ic t-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>Children</h3>
@@ -226,7 +227,7 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
     <div class="card">
       <h2>Terms of Service</h2>
       <p class="muted">Effective 13 October 2026 · applies to the S Solver browser extension, its source code and this website</p>
-      <p>S Solver is © 2026 Semtexhigh. All rights reserved. S Solver is not open source. All of it was written by Semtexhigh: the Sparx engine, Seneca mode, answer memory, panel, popup, icons and this website. Installing or using S Solver means you accept these terms.</p>
+      <p>S Solver is © 2026 Semtexhigh. All rights reserved. S Solver is not open source. All of it was written by Semtexhigh: the Sparx engine, Seneca mode, Dr Frost mode, the built-in maths solver, answer memory, panel, popup, icons and this website. Installing or using S Solver means you accept these terms.</p>
       <span class="pill ok">Personal use only · No copying · No deobfuscation</span>
     </div>
 
@@ -244,7 +245,7 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
         <tr><td>Modifying</td><td>No changing, patching, rebranding or removing the credits, the copyright notice or these terms.</td></tr>
         <tr><td>Sharing</td><td>No re-uploading, mirroring or redistributing S Solver or modified versions of it, including on the Chrome Web Store, GitHub or file-sharing sites.</td></tr>
         <tr><td>Selling</td><td>No selling, renting or charging for S Solver or access to it, and no using it in a paid service.</td></tr>
-        <tr><td>Misuse</td><td>No using S Solver to harm, overload or break the Sparx, Seneca or AI provider services, or to get into other people's accounts.</td></tr>
+        <tr><td>Misuse</td><td>No using S Solver to harm, overload or break the Sparx, Seneca, Dr Frost or AI provider services, or to get into other people's accounts.</td></tr>
       </table>
     </div>
 
@@ -261,7 +262,7 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
 
     <div class="card">
       <h3><span class="ic t-am"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>Your responsibility</h3>
-      <p>You are responsible for how you use S Solver, including following your school's rules and the terms of Sparx, Seneca and your AI provider. S Solver is provided as it is, with no warranty, and Semtexhigh is not liable for any loss or consequence from using it. S Solver is not made by or linked to Sparx Learning or Seneca Learning.</p>
+      <p>You are responsible for how you use S Solver, including following your school's rules and the terms of Sparx, Seneca, Dr Frost and your AI provider. S Solver is provided as it is, with no warranty, and Semtexhigh is not liable for any loss or consequence from using it. S Solver is not made by or linked to Sparx Learning, Seneca Learning or Dr Frost Maths.</p>
       <h3 style="margin-top:12px">Changes and contact</h3>
       <p>These terms may be updated; the new version and its date will appear on this page. Questions: <span style="font-family:var(--mono);color:var(--tx);user-select:all">67ace67a@gmail.com</span>.</p>
     </div>
@@ -271,7 +272,7 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
   <section class="panel" id="credits" role="tabpanel" aria-labelledby="tab-credits">
     <div class="author">
       <div class="avatar"><img src="https://github.com/Semtexhigh.png?size=160" alt="Semtexhigh" loading="lazy"></div>
-      <div><div class="author-name">Semtexhigh</div><div class="author-sub">Sparx engine, panel UI, Seneca mode &amp; answer memory</div></div>
+      <div><div class="author-name">Semtexhigh</div><div class="author-sub">Sparx engine, Seneca &amp; Dr Frost modes, built-in maths solver, panel UI</div></div>
       <a class="btn" href="https://github.com/Semtexhigh" target="_blank" rel="noopener">GitHub →</a>
     </div>
 
@@ -279,7 +280,7 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
     <div class="libs">
       <div class="lib"><b>KaTeX</b><span>Maths rendering · MIT</span></div>
       <div class="lib"><b>Marked</b><span>Markdown answers · MIT</span></div>
-      <div class="lib"><b>Tesseract.js</b><span>100 Club OCR · Apache-2.0</span></div>
+      <div class="lib"><b>Tesseract.js</b><span>Times-tables &amp; diagram reading · Apache-2.0</span></div>
       <div class="lib"><b>html2canvas</b><span>Picture questions · MIT</span></div>
     </div>
 
@@ -288,6 +289,8 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
       <div class="lib"><b>Groq</b><span>GPT-OSS 120B</span></div>
       <div class="lib"><b>Anthropic</b><span>Claude Sonnet &amp; Haiku</span></div>
       <div class="lib"><b>Google</b><span>Gemini Flash &amp; Pro</span></div>
+      <div class="lib"><b>Chrome built-in AI</b><span>Gemini Nano · on your computer</span></div>
+      <div class="lib"><b>Ollama</b><span>Local models · on your computer</span></div>
     </div>
   </section>
 

@@ -1,6 +1,6 @@
 # S Solver
 
-AI study helper for **Sparx Maths** and **Seneca Learning** (Chrome extension).
+AI study helper for **Sparx Maths**, **Seneca Learning** and **Dr Frost Maths** (Chrome extension). Current version: 4.6.
 
 Website: https://semtexhigh.github.io/s-solver/
 
@@ -12,7 +12,7 @@ Website: https://semtexhigh.github.io/s-solver/
 | Support (wallets) | https://semtexhigh.github.io/s-solver/#wallets |
 | GitHub | https://semtexhigh.github.io/s-solver/#github |
 
-No servers, no analytics, no ads. Everything S Solver stores stays in your browser; questions are sent only to the AI provider you choose, with your own API key.
+No servers, no analytics, no ads. Everything S Solver stores stays in your browser; questions are sent only to the AI provider you choose, with your own API key. The built-in maths solver, Chrome's built-in AI and Ollama run on your own computer.
 
 Built by [Semtexhigh](https://github.com/Semtexhigh).
 

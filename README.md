@@ -1,6 +1,6 @@
 # S Solver
 
-AI study helper for **Sparx Maths**, **Seneca Learning** and **Dr Frost Maths** (Chrome extension). Current version: 4.6.
+AI study helper for **Sparx Maths**, **Seneca Learning** and **Dr Frost Maths** (Chrome extension). Current version: 4.7.
 
 Website: https://semtexhigh.github.io/s-solver/
 

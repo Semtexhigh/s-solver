@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Get an API key · S Solver</title>
+<meta name="description" content="Step-by-step guides to get a free Gemini or Groq API key (or a paid Claude key) and add it to S Solver.">
+<link rel="icon" href="../icon128.png">
+<style>
+:root{--bg:#0b0b12;--panel:#12121c;--panel2:#191926;--line:#262636;--tx:#ececf4;--txd:#a3a3b8;--txm:#6f6f86;--ac:#8b5cf6;--ac2:#b69bff;--acd:rgba(139,92,246,.14);--ok:#2fd38a;--warn:#ffb020;--r:14px}
+@media (prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#f6f6fb;--panel:#fff;--panel2:#f1f0f8;--line:#e2e1ee;--tx:#17171f;--txd:#4a4a5c;--txm:#7d7d90;--acd:rgba(139,92,246,.1)}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--ac2)}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+header{padding:34px 0 10px;display:flex;align-items:center;gap:14px}
+header img{width:44px;height:44px;border-radius:12px}
+header b{font-size:18px;letter-spacing:.2px}header small{display:block;color:var(--txm);font-size:13px}
+.hero{padding:22px 0 8px}
+.hero h1{font-size:clamp(28px,5vw,40px);line-height:1.15;margin:0 0 10px;letter-spacing:-.5px}
+.hero p{color:var(--txd);margin:0;max-width:640px}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acd);color:var(--ac2);margin-bottom:12px}
+.pick{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:26px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--ac);transform:translateY(-2px)}
+.card h3{margin:0 0 4px;font-size:17px}.card p{margin:0;color:var(--txd);font-size:14px}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-bottom:8px}
+.t-free{background:rgba(47,211,138,.14);color:var(--ok)}.t-paid{background:rgba(255,176,32,.14);color:var(--warn)}
+.tabs{display:flex;gap:6px;margin:34px 0 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{appearance:none;border:0;background:none;color:var(--txm);font:600 15px system-ui,sans-serif;padding:12px 14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.tab[aria-selected=true]{color:var(--tx);border-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:2px;border-radius:6px}
+.guide{display:none;padding:22px 0 6px;animation:fade .3s ease}
+.guide.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+.guide h2{margin:0 0 6px;font-size:24px}.guide>p{color:var(--txd);margin:0 0 18px}
+ol.steps{list-style:none;padding:0;margin:0;counter-reset:s}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 22px 52px}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--acd);color:var(--ac2);font-weight:800;display:grid;place-items:center}
+ol.steps>li::after{content:"";position:absolute;left:16px;top:40px;bottom:6px;width:2px;background:var(--line)}
+ol.steps>li:last-child::after{display:none}
+ol.steps h4{margin:4px 0 4px;font-size:16px}ol.steps p{margin:0 0 10px;color:var(--txd)}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--ac);color:#fff;text-decoration:none;font-weight:700;padding:10px 16px;border-radius:10px;font-size:15px}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:var(--panel2);color:var(--tx);border:1px solid var(--line)}
+/* small drawn screens, so each step shows what to look for */
+.mock{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 4px;font-size:14px;max-width:520px}
+.mock .bar{display:flex;gap:6px;margin-bottom:10px}.mock .bar i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.mock .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:8px;background:var(--panel2);margin-top:6px}
+.mock .hl{outline:2px solid var(--ac);outline-offset:1px;box-shadow:0 0 0 6px var(--acd)}
+.mock .fake{padding:4px 10px;border-radius:7px;background:var(--ac);color:#fff;font-weight:700;font-size:13px}
+.mock code,.key{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+.key{background:var(--panel2);border:1px dashed var(--line);border-radius:6px;padding:2px 7px;color:var(--tx)}
+.note{border-left:3px solid var(--warn);background:var(--panel);padding:10px 14px;border-radius:0 10px 10px 0;color:var(--txd);margin:4px 0 0;font-size:14px}
+.note.ok{border-color:var(--ok)}
+section.box{margin:34px 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+section.box h2{margin:0 0 12px;font-size:21px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}th{color:var(--txm);font-weight:600}
+details{border-bottom:1px solid var(--line);padding:12px 0}details:last-child{border:0}
+summary{cursor:pointer;font-weight:650;list-style:none}summary::-webkit-details-marker{display:none}
+summary::before{content:"+";display:inline-block;width:20px;color:var(--ac2);font-weight:800}details[open] summary::before{content:"–"}
+details p{color:var(--txd);margin:8px 0 0 20px}
+footer{color:var(--txm);font-size:13px;padding:24px 0 40px;text-align:center}
+@media (max-width:640px){.pick{grid-template-columns:1fr}ol.steps>li{padding-left:46px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><img src="../icon128.png" alt=""><div><b>S Solver</b><small>API key guide</small></div></header>
+
+<div class="hero">
+  <span class="badge">Takes about 2 minutes</span>
+  <h1>Get an API key for S Solver</h1>
+  <p>An API key lets S Solver use a proper AI to work out questions. Gemini and Groq are free and don't need a card. Pick one below, follow the steps, then paste the key into S Solver.</p>
+</div>
+
+<div class="pick">
+  <a class="card" href="#gemini" data-go="gemini"><span class="tag t-free">FREE · BEST PICK</span><h3>Google Gemini</h3><p>Reads pictures and diagrams. Sign in with a Google account.</p></a>
+  <a class="card" href="#groq" data-go="groq"><span class="tag t-free">FREE · FASTEST</span><h3>Groq</h3><p>Very fast for text questions. Can't read pictures.</p></a>
+  <a class="card" href="#claude" data-go="claude"><span class="tag t-paid">PAID</span><h3>Claude</h3><p>Very accurate. Needs a few dollars of credit first.</p></a>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tab-gemini" aria-controls="gemini" aria-selected="true">Gemini (free)</button>
+  <button class="tab" role="tab" id="tab-groq" aria-controls="groq" aria-selected="false">Groq (free)</button>
+  <button class="tab" role="tab" id="tab-claude" aria-controls="claude" aria-selected="false">Claude (paid)</button>
+  <button class="tab" role="tab" id="tab-add" aria-controls="add" aria-selected="false">Add it to S Solver</button>
+</div>
+
+<div class="guide on" id="gemini" role="tabpanel" aria-labelledby="tab-gemini">
+  <h2>Free Gemini key</h2>
+  <p>Google AI Studio gives you a free key. You only need a Google account.</p>
+  <ol class="steps">
+    <li><h4>Open Google AI Studio's key page</h4><p>Sign in with your Google account if it asks.</p>
+      <a class="btn" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Open aistudio.google.com/apikey ↗</a></li>
+    <li><h4>Accept the terms (first time only)</h4><p>Tick the boxes and press Continue.</p></li>
+    <li><h4>Press "Create API key"</h4><p>If it asks for a project, pick the one it suggests or press "Create project".</p>
+      <div class="mock"><div class="bar"><i></i><i></i><i></i></div><div class="row"><span>API keys</span><span class="fake hl">Create API key</span></div></div></li>
+    <li><h4>Copy the key</h4><p>It starts with <span class="key">AIza</span>. Press the copy button next to it.</p>
+      <div class="mock"><div class="row hl"><code>AIzaSy••••••••••••••••••••••</code><span class="fake">Copy</span></div></div></li>
+    <li><h4>Paste it into S Solver</h4><p>See <a href="#add" data-go="add">Add it to S Solver</a>. Pick a <b>Gemini</b> model there.</p></li>
+  </ol>
+  <p class="note ok">The free plan has a daily limit. If S Solver says "rate limit", wait a minute or switch to <b>Gemini Flash-Lite</b>, which has the highest free limit.</p>
+</div>
+
+<div class="guide" id="groq" role="tabpanel" aria-labelledby="tab-groq">
+  <h2>Free Groq key</h2>
+  <p>Groq is free and very fast. It only reads text, so questions with a picture still need Gemini or Claude.</p>
+  <ol class="steps">
+    <li><h4>Open the Groq console</h4><p>Sign up with Google, GitHub or an email address.</p>
+      <a class="btn" href="https://console.groq.com/keys" target="_blank" rel="noopener">Open console.groq.com/keys ↗</a></li>
+    <li><h4>Press "Create API Key"</h4><p>Type any name, for example <i>S Solver</i>, then press Submit.</p>
+      <div class="mock"><div class="bar"><i></i><i></i><i></i></div><div class="row"><span>API Keys</span><span class="fake hl">Create API Key</span></div></div></li>
+    <li><h4>Copy the key straight away</h4><p>It starts with <span class="key">gsk_</span>. Groq only shows it once. If you lose it, make a new one.</p>
+      <div class="mock"><div class="row hl"><code>gsk_••••••••••••••••••••••••</code><span class="fake">Copy</span></div></div></li>
+    <li><h4>Paste it into S Solver</h4><p>See <a href="#add" data-go="add">Add it to S Solver</a>. Pick <b>Groq</b> as the model.</p></li>
+  </ol>
+</div>
+
+<div class="guide" id="claude" role="tabpanel" aria-labelledby="tab-claude">
+  <h2>Claude key (paid)</h2>
+  <p>Claude is very accurate, including with diagrams. It isn't free: you add credit first, then each question costs a fraction of a cent.</p>
+  <ol class="steps">
+    <li><h4>Open the Claude Console</h4><p>Create an account or sign in.</p>
+      <a class="btn" href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Open the Claude Console ↗</a></li>
+    <li><h4>Add credit</h4><p>Go to <b>Billing</b> and buy a small amount of credit. A card is needed.</p></li>
+    <li><h4>Create a key</h4><p>Go to <b>API keys</b> and press <b>Create key</b>. Give it a name such as <i>S Solver</i>.</p>
+      <div class="mock"><div class="bar"><i></i><i></i><i></i></div><div class="row"><span>API keys</span><span class="fake hl">Create key</span></div></div></li>
+    <li><h4>Copy the key straight away</h4><p>It starts with <span class="key">sk-ant-</span> and is only shown once.</p>
+      <div class="mock"><div class="row hl"><code>sk-ant-••••••••••••••••••••••</code><span class="fake">Copy</span></div></div></li>
+    <li><h4>Paste it into S Solver</h4><p>See <a href="#add" data-go="add">Add it to S Solver</a>. Pick <b>Claude Haiku</b> (cheaper) or <b>Claude Sonnet</b>.</p></li>
+  </ol>
+  <p class="note">Set a monthly spending limit in the Console so it can never cost more than you expect.</p>
+</div>
+
+<div class="guide" id="add" role="tabpanel" aria-labelledby="tab-add">
+  <h2>Add the key to S Solver</h2>
+  <p>You only do this once. The key stays on your computer.</p>
+  <ol class="steps">
+    <li><h4>Click the S Solver icon in Chrome's toolbar</h4><p>If you can't see it, click the puzzle-piece icon and pin S Solver.</p></li>
+    <li><h4>Paste your key into the API key box</h4>
+      <div class="mock"><div class="row hl"><code>gsk_ / sk-ant- / AIza...</code></div></div></li>
+    <li><h4>Choose the model that matches your key</h4><p>Gemini key → a Gemini model. Groq key → Groq. Claude key → Claude Haiku or Sonnet.</p></li>
+    <li><h4>Press "Save and Activate"</h4><p>Go back to your homework tab. There's no need to refresh.</p>
+      <div class="mock"><div class="row"><span>Ready</span><span class="fake hl">Save and Activate</span></div></div></li>
+  </ol>
+</div>
+
+<section class="box">
+  <h2>Which one should I pick?</h2>
+  <table>
+    <tr><th></th><th>Gemini</th><th>Groq</th><th>Claude</th></tr>
+    <tr><td>Cost</td><td>Free</td><td>Free</td><td>Paid credit</td></tr>
+    <tr><td>Card needed</td><td>No</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Reads pictures</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Speed</td><td>Fast</td><td>Fastest</td><td>Fast</td></tr>
+    <tr><td>Key starts with</td><td><span class="key">AIza</span></td><td><span class="key">gsk_</span></td><td><span class="key">sk-ant-</span></td></tr>
+  </table>
+</section>
+
+<section class="box">
+  <h2>Questions</h2>
+  <details><summary>Do I need a key at all?</summary><p>No. Without one, S Solver still uses its own built-in solver and a free web answer. A key makes it faster and better at harder questions and diagrams.</p></details>
+  <details><summary>Is my key safe?</summary><p>S Solver keeps the key in your browser and only sends it to the AI company you picked. Don't share it or post it anywhere. If someone gets it, delete it on the same page you made it and make a new one.</p></details>
+  <details><summary>It says the key is wrong</summary><p>Check you copied the whole key with no space at the start or end, and that the model matches the key (a Gemini key needs a Gemini model).</p></details>
+  <details><summary>It says "rate limit" or "quota"</summary><p>Free keys allow a set number of questions per minute and per day. Wait a minute, set a longer time per question, or switch to Gemini Flash-Lite.</p></details>
+</section>
+
+<footer>S Solver by Semtexhigh · <a href="../">Back to the S Solver site</a></footer>
+</div>
+<script>
+(function(){
+  var ids=["gemini","groq","claude","add"];
+  function show(id,scroll){
+    if(ids.indexOf(id)<0)id="gemini";
+    ids.forEach(function(k){var t=document.getElementById("tab-"+k),g=document.getElementById(k);var on=k===id;t.setAttribute("aria-selected",on);g.classList.toggle("on",on);});
+    if(scroll)document.querySelector(".tabs").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  ids.forEach(function(k){document.getElementById("tab-"+k).addEventListener("click",function(){show(k);try{history.replaceState(null,"","#"+k)}catch(e){}});});
+  document.querySelectorAll("[data-go]").forEach(function(a){a.addEventListener("click",function(e){e.preventDefault();var k=a.getAttribute("data-go");show(k,true);try{history.replaceState(null,"","#"+k)}catch(er){}});});
+  document.querySelector(".tabs").addEventListener("keydown",function(e){if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return;var cur=ids.findIndex(function(k){return document.getElementById("tab-"+k).getAttribute("aria-selected")==="true"});var n=(cur+(e.key==="ArrowRight"?1:ids.length-1))%ids.length;show(ids[n]);document.getElementById("tab-"+ids[n]).focus();});
+  show((location.hash||"").slice(1)||"gemini");
+  window.addEventListener("hashchange",function(){show(location.hash.slice(1),true)});
+})();
+</script>
+</body>
+</html>

@@ -45,10 +45,12 @@ h1{margin:0;font-size:26px;font-weight:900;letter-spacing:.14em;line-height:1.1;
 .status span:last-child{margin-left:auto;color:var(--txm);letter-spacing:.06em}
 
 /* tabs */
-.tabs{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surf);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;backdrop-filter:blur(10px)}
-.tab{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 6px 10px;background:none;border:0;border-bottom:2px solid transparent;color:var(--txm);font:700 13px var(--font);letter-spacing:.02em;cursor:pointer;transition:all .18s}
-.tab svg{width:15px;height:15px;flex-shrink:0}
-.tab:hover{color:var(--txd);background:var(--acdim)}
+.tabs{display:grid;grid-template-columns:repeat(7,1fr);background:var(--surf);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;backdrop-filter:blur(10px)}
+.tablink{text-decoration:none}
+.tab,.tablink{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 6px 10px;background:none;border:0;border-bottom:2px solid transparent;color:var(--txm);font:700 13px var(--font);letter-spacing:.02em;cursor:pointer;transition:all .18s}
+.tab svg,.tablink svg{width:15px;height:15px;flex-shrink:0}
+.tab:hover,.tablink:hover{color:var(--txd);background:var(--acdim)}
+.tablink:hover{color:var(--acl)}
 .tab[aria-selected="true"]{color:var(--acl);border-bottom-color:var(--ac);background:linear-gradient(180deg,transparent,rgba(139,92,246,.08))}
 
 /* panels */
@@ -131,7 +133,7 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 @media (max-width:560px){
-  .tab span{display:none} .tab{padding:13px 4px 11px}
+  .tab span,.tablink span{display:none} .tab,.tablink{padding:13px 4px 11px}
   .hero-cta{margin-left:0;width:100%} .hero-cta .btn{flex:1}
   .wallet{grid-template-columns:auto 1fr} .w-act{grid-column:1/-1;justify-content:flex-end}
   .author .btn{margin-left:0;width:100%}
@@ -157,7 +159,7 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
       </div>
       <div>
         <h1>S SOLVER</h1>
-        <div class="tag"><span class="badge">v4.7</span><span>Sparx</span><span>·</span><span>Seneca</span><span>·</span><span>Dr Frost</span></div>
+        <div class="tag"><span class="badge">v5.6</span><span>Sparx</span><span>·</span><span>Seneca</span><span>·</span><span>Dr Frost</span></div>
       </div>
       <div class="hero-cta">
         <a class="btn gh" href="https://github.com/Semtexhigh" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>GitHub</a>
@@ -172,6 +174,8 @@ footer{text-align:center;font-size:12px;color:var(--txm);padding-top:6px}
     <button class="tab" role="tab" id="tab-credits" data-tab="credits" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>Credits</span></button>
     <button class="tab" role="tab" id="tab-wallets" data-tab="wallets" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20M16 15h2M6 6V4.5A1.5 1.5 0 0 1 7.5 3H18"/></svg><span>Wallets</span></button>
     <button class="tab" role="tab" id="tab-github" data-tab="github" aria-selected="false"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg><span>GitHub</span></button>
+    <a class="tablink" href="vault.html" title="Build history (password)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>History</span></a>
+    <a class="tablink" href="https://semtexhigh.github.io/get-autoclicker/?v=2#/showcase" title="All projects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Showcase</span></a>
   </nav>
 
   <!-- PRIVACY -->

@@ -147,7 +147,9 @@ button.mcell:hover{background:#1a1a1a}button.mcell:active{transform:scale(.985)}
 
 /* ---- vault lock ---------------------------------------------------- */
 #vlock{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
-  background:#0a0a0a;padding:20px}
+  background:rgba(10,10,10,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);padding:20px;animation:vlin .18s var(--ease)}
+@keyframes vlin{from{opacity:0}to{opacity:1}}
+#vlock button.vno{background:none;color:#f2f2f2;border-color:#3a3a3a}
 #vlock.off{display:none}
 #vlock .vbox{width:min(420px,100%);border:1px solid #2e2e2e;background:#111;border-radius:14px;padding:28px}
 #vlock h1{font-size:17px;margin:0 0 7px}
@@ -163,16 +165,14 @@ button.mcell:hover{background:#1a1a1a}button.mcell:active{transform:scale(.985)}
 #vlock .vmsg.bad{color:#e8a0a0}
 .vpad{padding:22px;text-align:center;color:#8a8a8a;font-size:12.5px}
 </style></head><body>
-<div id="vlock">
+<div id="vlock" class="off" role="dialog" aria-modal="true" aria-labelledby="vlt">
   <div class="vbox">
-    <h1>Build vault</h1>
-    <p>Every build, source file and archive behind this prompt is encrypted with AES&#8209;256&#8209;GCM.
-       The password is not checked against a stored copy &mdash; it derives the key. A wrong one does not
-       get turned away, it simply opens nothing.</p>
+    <h1 id="vlt">Password needed</h1>
+    <p>Builds, source and downloads are encrypted with AES&#8209;256&#8209;GCM. Enter the password once and everything on this page opens until you leave it. It is not saved anywhere.</p>
     <input id="vpw" type="password" autocomplete="off" spellcheck="false" placeholder="password"
            aria-label="Owner password">
     <p class="vmsg" id="vmsg" role="status"></p>
-    <div class="vrow"><button type="button" id="vgo">Unlock</button></div>
+    <div class="vrow"><button type="button" class="vno" id="vno">Cancel</button><button type="button" id="vgo">Unlock</button></div>
   </div>
 </div><div class="wrap">
 <header>
@@ -389,7 +389,7 @@ function openModule(m,isAnim){
  if(!it){$("codewrap").innerHTML='<div class="srcload">This module is not in the vault.</div>';return}
  vaultBytes(it).then(function(b){var t=new TextDecoder("utf-8",{fatal:false}).decode(b);SRC.text=t;SRC.lines=t.split("\n");$("codewrap").innerHTML="";
    if(isAnim)animPreview(t,m[0]);renderChunk()})
-  .catch(function(e){$("codewrap").innerHTML='<div class="srcload">Could not decrypt this module ('+(e&&e.message||"unknown")+').</div>'});
+  .catch(function(e){if(vlocked(e,function(){openModule(m,isAnim)}))return;$("codewrap").innerHTML='<div class="srcload">Could not decrypt this module ('+(e&&e.message||"unknown")+').</div>'});
 }
 /* live preview: the decrypted keyframes play on a stand-in shape in a sandboxed frame (no scripts) */
 function animPreview(css,name){
@@ -440,6 +440,7 @@ function loadSrcVault(it,d){
    var t=new TextDecoder("utf-8",{fatal:false}).decode(b);
    SRC.text=t;SRC.lines=t.split("\n");$("codewrap").innerHTML="";renderChunk();
  }).catch(function(e){
+   if(vlocked(e,function(){$("codewrap").innerHTML='<div class="srcload">Decrypting\u2026</div>';loadSrcVault(it,d)}))return;
    $("codewrap").innerHTML='<div class="srcload">Could not decrypt this build ('+(e&&e.message||"unknown")+').</div>';
  });
 }
@@ -459,7 +460,7 @@ $("rows").addEventListener("click",function(ev){
   if(!it){alert("That build is not in the vault.");return}
   a.textContent="\u2026";
   vaultURL(it).then(function(u){a.textContent="open";window.open(u,"_blank","noopener")})
-   .catch(function(e){a.textContent="open";alert("Could not decrypt that: "+(e&&e.message||""))});
+   .catch(function(e){a.textContent="open";vfail(e)});
   return;
  }
  if(a.getAttribute("data-zip")!==null){ev.preventDefault();var zd=V[+a.getAttribute("data-zip")],zz=zipOf(zd);if(!zz){alert("No source folder for that build.");return}a.textContent="\u2026";saveVault(zz,null);setTimeout(function(){a.textContent="zip"},1500);return}
@@ -657,7 +658,7 @@ function vaultItem(file){
 function vaultBytes(it){
  if(!it)return Promise.reject(new Error("not in the vault"));
  if(VCACHE[it.id])return Promise.resolve(VCACHE[it.id]);
- if(!VKEY)return Promise.reject(new Error("locked"));
+ if(!VKEY)return needKey().then(function(){return vaultBytes(it)});
  var base="./vault/"+(VMAN.dir||"b")+"/"+it.id+".enc", urls=[base], n;
  if(it.parts){urls=[];for(n=0;n<it.parts;n++)urls.push("./vault/"+(VMAN.dir||"b")+"/"+it.id+".p"+n+".enc")}
  return Promise.all(urls.map(function(u){
@@ -692,7 +693,7 @@ function saveVault(it,d){
   var a=document.createElement("a");a.href=u;a.download=(d&&d.file)||it.file;a.rel="noopener";
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){URL.revokeObjectURL(u)},4000);
- }).catch(function(e){alert("Could not decrypt that: "+(e&&e.message||"unknown error"))});
+ }).catch(function(e){vfail(e)});
 }
 function zipOf(d){if(!VMAN)return null;for(var i=0;i<VMAN.items.length;i++){var x=VMAN.items[i];if(x.kind==="zip"&&x.seq===d.seq)return x}return null}
 function wireVaultButtons(it,d){
@@ -703,12 +704,19 @@ function wireVaultButtons(it,d){
   if(!it){alert("This build is not in the vault.");return}
   run.textContent="Decrypting\u2026";
   vaultURL(it).then(function(u){run.textContent="Open source";window.open(u,"_blank","noopener")})
-   .catch(function(e){run.textContent="Open source";alert("Could not decrypt that: "+(e&&e.message||""))})};
+   .catch(function(e){run.textContent="Open source";vfail(e)})};
  dl.onclick=function(ev){ev.preventDefault();saveVault(it,d)};
 }
 
 /* ---- unlock ---- */
 function vsetmsg(t,bad){var m=$("vmsg");m.textContent=t;m.className="vmsg"+(bad?" bad":"")}
+/* the key lives in this tab only: never written to localStorage, sessionStorage or cookies */
+var VWAIT=[];
+function needKey(){if(VKEY)return Promise.resolve();return new Promise(function(ok,no){VWAIT.push([ok,no]);
+ var L=$("vlock");if(L.classList.contains("off")){L.classList.remove("off");vsetmsg("");setTimeout(function(){try{$("vpw").focus()}catch(e){}},30)}})}
+function vcancel(){$("vlock").classList.add("off");$("vpw").value="";var w=VWAIT;VWAIT=[];w.forEach(function(f){f[1](new Error("cancelled"))})}
+function vfail(e){if(e&&e.message==="cancelled")return;alert("Could not decrypt that: "+((e&&e.message)||"unknown error"))}
+function vlocked(e,retry){if(!(e&&e.message==="cancelled"))return false;$("codewrap").innerHTML='<div class="srcload">Locked. <button class="srcbtn" id="vre">Enter the password to read it</button></div>';$("vre").addEventListener("click",retry);return true}
 function vtry(pw){
  var go=$("vgo");go.disabled=true;vsetmsg("deriving the key\u2026");
  var man;
@@ -717,9 +725,8 @@ function vtry(pw){
   .then(function(j){man=j;return vunwrap(pw,man)})
   .then(function(k){
     VKEY=k;VMAN=man;go.disabled=false;
-    try{sessionStorage.removeItem("s-solver.vault.pw")}catch(e){}
-    $("vlock").classList.add("off");
-    vaultReady();
+    $("vlock").classList.add("off");$("vpw").value="";vsetmsg("");
+    var w=VWAIT;VWAIT=[];w.forEach(function(f){f[0]()});
   })
   .catch(function(e){
     go.disabled=false;
@@ -765,17 +772,17 @@ function buildVaultExtras(){
   if(!it){alert("The latest build is not in the vault.");return}
   ol.textContent="Decrypting\u2026";
   vaultURL(it).then(function(u){ol.textContent="Open latest \u2014 "+d.ver;window.open(u,"_blank","noopener")})
-   .catch(function(e){ol.textContent="Open latest \u2014 "+d.ver;alert("Could not decrypt that: "+(e&&e.message||""))});
+   .catch(function(e){ol.textContent="Open latest \u2014 "+d.ver;vfail(e)});
  });
 })();
 $("vgo").addEventListener("click",function(){
  var v=$("vpw").value; if(!v){vsetmsg("Type the password.",true);return} vtry(v)});
 $("vpw").addEventListener("keydown",function(ev){if(ev.key==="Enter")$("vgo").click()});
-(function(){
- var pw=null; try{pw=sessionStorage.getItem("s-solver.vault.pw")}catch(e){}
- if(pw){try{sessionStorage.removeItem("s-solver.vault.pw")}catch(e){} $("vpw").value=pw; vtry(pw);}
- else{setTimeout(function(){try{$("vpw").focus()}catch(e){}},80)}
-})();
+$("vno").addEventListener("click",vcancel);
+document.addEventListener("keydown",function(ev){if(ev.key==="Escape"&&!$("vlock").classList.contains("off"))vcancel()});
+$("vlock").addEventListener("click",function(ev){if(ev.target===this)vcancel()});
+/* the list of encrypted files is public (it holds no secrets), so the page shows everything before any password */
+fetch("./vault/manifest.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){if(!VMAN)VMAN=j;vaultReady()}).catch(function(){var t=$("vaultTag");if(t)t.textContent="The vault list could not be loaded."});
 
 })();
 </script><button class="btt" id="btt" aria-label="Back to top" title="Back to top">↑</button><script>(function(){function init(){var b=document.getElementById("btt");if(!b)return;

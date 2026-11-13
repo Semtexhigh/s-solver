@@ -1,0 +1,1671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="robots" content="noindex,nofollow">
+<title>S Solver Admin</title>
+<style>
+/* ============================ tokens ============================ */
+:root{
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --bg:#0b0b0c; --bg2:#121214; --bg3:#17171a; --bg4:#1e1e22;
+  --line:#2a2a2f; --line2:#35353c;
+  --t1:#f2f2f4; --t2:#a8a8b0; --t3:#73737c; --t4:#55555d;
+  --on:#f2f2f4; --onb:#0b0b0c;
+  --r:12px; --r2:16px; --r3:20px;
+  --ez:cubic-bezier(.22,1,.36,1);
+  --ezs:cubic-bezier(.34,1.56,.64,1);
+  --t-fast:150ms; --t-med:200ms; --t-slow:290ms;
+  --pad:16px; --row:56px; --fs:14px;
+  --barh:72px;
+}
+html[data-theme="light"]{
+  --bg:#f7f7f8; --bg2:#fff; --bg3:#f1f1f3; --bg4:#e7e7ea;
+  --line:#dcdce0; --line2:#c6c6cc;
+  --t1:#101012; --t2:#55555d; --t3:#78787f; --t4:#9a9aa2;
+  --on:#101012; --onb:#fff;
+}
+html[data-theme="paper"]{
+  --bg:#1a1a18; --bg2:#222220; --bg3:#272724; --bg4:#2f2f2b;
+  --line:#3a3a35; --line2:#48483f;
+  --t1:#f0efe8; --t2:#aaa99f; --t3:#7e7d74; --t4:#5e5d56;
+  --on:#f0efe8; --onb:#1a1a18;
+}
+html[data-density="compact"]{ --pad:11px; --row:46px; --fs:13px; }
+html[data-density="roomy"]{ --pad:22px; --row:66px; --fs:15px; }
+
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+html{ background:var(--bg); -webkit-text-size-adjust:100%; }
+body{
+  background:var(--bg); color:var(--t1);
+  font:var(--fs)/1.55 var(--mono);
+  font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1;
+  padding:0 0 calc(var(--barh) + env(safe-area-inset-bottom,0px));
+  min-height:100vh; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{ font:inherit; font-variant-numeric:inherit; color:inherit; }
+:focus-visible{ outline:2px solid var(--t1); outline-offset:2px; border-radius:6px; }
+::selection{ background:var(--t1); color:var(--bg); }
+.sr{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+[hidden]{ display:none!important; }
+
+/* ============================ chrome ============================ */
+header.top{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; gap:10px;
+  padding:calc(12px + env(safe-area-inset-top,0px)) var(--pad) 12px;
+  background:color-mix(in srgb, var(--bg) 86%, transparent);
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+@supports (backdrop-filter:blur(1px)){
+  header.top{ background:color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter:blur(14px) saturate(1.3); -webkit-backdrop-filter:blur(14px) saturate(1.3); }
+}
+.mark{ display:flex; align-items:center; gap:9px; min-width:0; }
+.mark .sq{
+  width:30px; height:30px; flex:none; border-radius:9px;
+  background:var(--t1); color:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:15px; letter-spacing:-.5px;
+}
+.mark h1{ margin:0; font-size:14px; font-weight:650; letter-spacing:-.2px; white-space:nowrap; }
+.mark .sub{ display:block; font-size:10.5px; font-weight:400; color:var(--t3); letter-spacing:.02em; }
+.top .spacer{ flex:1 1 auto; }
+.lamp{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:10.5px; color:var(--t3); padding:5px 9px;
+  border:1px solid var(--line); border-radius:999px; white-space:nowrap;
+}
+.lamp .dot{ width:7px; height:7px; border-radius:50%; background:var(--t4); flex:none; transition:background var(--t-fast); }
+.lamp.ok .dot{ background:var(--t1); animation:pulse 2.4s ease-in-out infinite; }
+.lamp.bad .dot{ background:var(--t2); animation:blink .9s steps(2,end) infinite; }
+@keyframes pulse{ 0%,100%{ opacity:1 } 50%{ opacity:.35 } }
+@keyframes blink{ 0%{ opacity:1 } 100%{ opacity:.15 } }
+
+/* ============================ layout ============================ */
+main{ padding:var(--pad); max-width:860px; margin:0 auto; }
+.view{ display:none; }
+.view.on{ display:block; animation:viewIn var(--t-slow) var(--ez); }
+@keyframes viewIn{ from{ opacity:0; transform:translateY(6px) } to{ opacity:1; transform:none } }
+
+.card{
+  background:var(--bg2); border:1px solid var(--line); border-radius:var(--r2);
+  padding:var(--pad); margin:0 0 12px;
+  transition:border-color var(--t-fast), transform var(--t-fast);
+}
+.card.in{ animation:cardIn var(--t-slow) var(--ez) both; }
+@keyframes cardIn{ from{ opacity:0; transform:translateY(8px) } to{ opacity:1; transform:none } }
+.card h2{
+  margin:0 0 3px; font-size:12px; font-weight:650;
+  letter-spacing:.07em; text-transform:uppercase; color:var(--t2);
+  display:flex; align-items:center; gap:8px;
+}
+.card h2 .grip{ display:none; cursor:grab; color:var(--t4); letter-spacing:0; }
+.card .hint{ margin:0 0 12px; font-size:11.5px; line-height:1.5; color:var(--t3); }
+.card .hint:last-child{ margin-bottom:0; }
+
+/* ============================ buttons ============================ */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  min-height:38px; padding:0 14px;
+  background:var(--bg3); border:1px solid var(--line2); border-radius:10px;
+  font-size:12.5px; font-weight:550; cursor:pointer; white-space:nowrap;
+  transition:background var(--t-fast), border-color var(--t-fast), transform 80ms var(--ez), opacity var(--t-fast);
+}
+.btn:hover:not([disabled]){ background:var(--bg4); border-color:var(--t4); transform:translateY(-1px); }
+.btn:active:not([disabled]){ transform:scale(.96); }
+.btn[disabled]{ opacity:.42; cursor:not-allowed; }
+.btn.pri{ background:var(--on); color:var(--onb); border-color:var(--on); font-weight:650; }
+.btn.pri:hover:not([disabled]){ background:var(--t1); border-color:var(--t1); }
+.btn.sm{ min-height:31px; padding:0 10px; font-size:11.5px; border-radius:8px; }
+.btn.wide{ width:100%; }
+.btn.danger{ border-color:var(--line2); font-weight:650; }
+.btn.danger::before{ content:"\2715"; font-size:11px; }
+.btn.spin{ pointer-events:none; }
+.btn.spin::after{
+  content:""; width:11px; height:11px; border-radius:50%;
+  border:1.6px solid currentColor; border-top-color:transparent;
+  animation:spin .62s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg) } }
+.row-btns{ display:flex; flex-wrap:wrap; gap:7px; }
+
+/* ============================ inputs ============================ */
+.fld{ display:block; margin:0 0 12px; }
+.fld > span{ display:block; font-size:11px; color:var(--t2); margin:0 0 5px; letter-spacing:.03em; }
+input[type=text],input[type=password],input[type=number],input[type=search],textarea,select{
+  width:100%; min-height:40px; padding:9px 11px;
+  background:var(--bg3); border:1px solid var(--line2); border-radius:10px;
+  transition:border-color var(--t-fast), background var(--t-fast);
+}
+input:hover,textarea:hover,select:hover{ border-color:var(--t4); }
+input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--t1); background:var(--bg2); }
+input::placeholder,textarea::placeholder{ color:var(--t4); }
+textarea{ min-height:68px; resize:vertical; line-height:1.5; }
+.shake{ animation:shake .32s var(--ez); border-color:var(--t1)!important; }
+@keyframes shake{ 0%,100%{ transform:translateX(0) } 20%{ transform:translateX(-5px) } 40%{ transform:translateX(5px) } 60%{ transform:translateX(-3px) } 80%{ transform:translateX(3px) } }
+
+/* a switch — the knob travels, the track crossfades */
+.sw{
+  display:flex; align-items:center; gap:12px; width:100%;
+  padding:12px; background:var(--bg3); border:1px solid var(--line2);
+  border-radius:var(--r); cursor:pointer; text-align:left;
+  transition:background var(--t-fast), border-color var(--t-fast);
+}
+.sw:hover{ background:var(--bg4); }
+.sw:active{ transform:scale(.995); }
+.sw .txt{ flex:1 1 auto; min-width:0; }
+.sw .txt b{ display:block; font-size:13px; font-weight:600; }
+.sw .txt i{ display:block; font-style:normal; font-size:11px; color:var(--t3); line-height:1.45; margin-top:2px; }
+.sw .track{
+  flex:none; width:44px; height:26px; border-radius:999px;
+  background:var(--bg); border:1px solid var(--line2); position:relative;
+  transition:background var(--t-med), border-color var(--t-med);
+}
+.sw .track::after{
+  content:""; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%;
+  background:var(--t3); transition:transform var(--t-med) var(--ezs), background var(--t-med);
+}
+.sw[aria-checked=true] .track{ background:var(--on); border-color:var(--on); }
+.sw[aria-checked=true] .track::after{ transform:translateX(18px); background:var(--onb); }
+
+/* segmented picker */
+.seg{ display:flex; gap:4px; padding:3px; background:var(--bg3); border:1px solid var(--line2); border-radius:10px; }
+.seg button{
+  flex:1 1 0; min-height:30px; padding:0 8px; border:0; border-radius:8px;
+  background:transparent; color:var(--t2); font-size:11.5px; cursor:pointer;
+  transition:background var(--t-fast), color var(--t-fast), transform 80ms;
+}
+.seg button:hover{ color:var(--t1); }
+.seg button:active{ transform:scale(.95); }
+.seg button[aria-pressed=true]{ background:var(--on); color:var(--onb); font-weight:650; }
+
+/* ============================ device rows ============================ */
+.dev{
+  display:flex; align-items:center; gap:11px;
+  padding:11px var(--pad); min-height:var(--row);
+  background:var(--bg2); border:1px solid var(--line); border-radius:var(--r);
+  margin:0 0 7px;
+  transition:border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+}
+.dev.in{ animation:cardIn 260ms var(--ez) both; }
+.dev:hover{ border-color:var(--line2); }
+.dev.open{ border-color:var(--t4); background:var(--bg3); }
+.dev.gone{ animation:collapse 250ms var(--ez) forwards; }
+@keyframes collapse{ to{ opacity:0; transform:translateX(-10px); max-height:0; margin:0; padding-top:0; padding-bottom:0; border-width:0 } }
+.dev .ava{
+  width:34px; height:34px; flex:none; border-radius:10px;
+  background:var(--bg4); border:1px solid var(--line2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; color:var(--t2); letter-spacing:-.3px;
+}
+.dev .who{ flex:1 1 auto; min-width:0; }
+.dev .who b{ display:block; font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dev .who span{ display:block; font-size:11px; color:var(--t3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dev .st{ flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:3px; }
+.tag{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; letter-spacing:.06em; text-transform:uppercase; font-weight:650;
+  padding:3px 8px; border-radius:999px; border:1px solid var(--line2); color:var(--t2); white-space:nowrap;
+}
+.tag.ok::before{ content:"\2713"; }
+.tag.ban{ background:var(--on); color:var(--onb); border-color:var(--on); }
+.tag.ban::before{ content:"\2715"; }
+.tag.timeout::before{ content:"\23F1"; }
+.tag.off::before{ content:"\25CB"; }
+.cd{ font-size:11px; color:var(--t2); font-weight:600; letter-spacing:.02em; }
+.cd.run{ animation:pulse 1s ease-in-out infinite; }
+.dev .chev{
+  flex:none; width:22px; text-align:center; color:var(--t4); font-size:11px;
+  transition:transform var(--t-med) var(--ez), color var(--t-fast);
+}
+.dev.open .chev{ transform:rotate(90deg); color:var(--t2); }
+.dev.hit{ background:var(--bg4); }
+
+.panel{ overflow:hidden; max-height:0; transition:max-height var(--t-slow) var(--ez); }
+.panel.open{ max-height:420px; }
+.panel .inner{
+  padding:12px var(--pad) 14px; margin:0 0 7px;
+  background:var(--bg3); border:1px solid var(--line2); border-top:0;
+  border-radius:0 0 var(--r) var(--r);
+}
+.kv{ display:grid; grid-template-columns:auto 1fr; gap:3px 12px; font-size:11.5px; margin:0 0 11px; }
+.kv dt{ color:var(--t3); white-space:nowrap; }
+.kv dd{ margin:0; color:var(--t1); overflow-wrap:anywhere; }
+.mins{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.mins input{ width:84px; min-height:31px; padding:5px 8px; font-size:11.5px; }
+
+/* ============================ bits ============================ */
+.stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(78px,1fr)); gap:7px; margin:0 0 12px; }
+.stat{
+  background:var(--bg3); border:1px solid var(--line); border-radius:var(--r);
+  padding:11px 9px; text-align:center;
+}
+.stat b{ display:block; font-size:21px; font-weight:650; letter-spacing:-.5px; line-height:1.15; }
+.stat span{ display:block; font-size:9.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--t3); margin-top:3px; }
+.big{
+  display:flex; align-items:center; gap:12px; padding:14px;
+  background:var(--bg3); border:1px solid var(--line2); border-radius:var(--r2);
+  margin:0 0 12px;
+}
+.big .ic{ font-size:22px; line-height:1; flex:none; width:30px; text-align:center; }
+.big .tx{ flex:1 1 auto; min-width:0; }
+.big .tx b{ display:block; font-size:14px; font-weight:650; }
+.big .tx i{ display:block; font-style:normal; font-size:11.5px; color:var(--t3); line-height:1.45; margin-top:2px; }
+.bar{ height:3px; background:var(--bg4); border-radius:999px; overflow:hidden; margin:10px 0 0; }
+.bar i{ display:block; height:100%; background:var(--t2); width:0; transition:width 1s linear; }
+.empty{ text-align:center; padding:34px 18px; color:var(--t3); }
+.empty b{ display:block; font-size:13px; color:var(--t2); margin:0 0 5px; font-weight:600; }
+.empty span{ font-size:11.5px; line-height:1.55; }
+.skel{ background:var(--bg2); border:1px solid var(--line); border-radius:var(--r); height:var(--row); margin:0 0 7px; overflow:hidden; position:relative; }
+.skel::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg,transparent,var(--bg4),transparent);
+  transform:translateX(-100%); animation:shim 1.25s ease-in-out infinite;
+}
+@keyframes shim{ to{ transform:translateX(100%) } }
+.logline{
+  display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--line);
+  font-size:11.5px; line-height:1.5;
+}
+.logline:last-child{ border-bottom:0; }
+.logline time{ flex:none; color:var(--t4); font-size:10.5px; width:74px; }
+.logline span{ flex:1 1 auto; min-width:0; overflow-wrap:anywhere; }
+.note{
+  font-size:11px; line-height:1.55; color:var(--t3);
+  padding:10px 12px; background:var(--bg3); border:1px solid var(--line); border-radius:10px;
+  margin:12px 0 0;
+}
+.note b{ color:var(--t2); font-weight:600; }
+
+/* ============================ toast ============================ */
+#toast{
+  position:fixed; left:50%; bottom:calc(var(--barh) + 16px + env(safe-area-inset-bottom,0px));
+  transform:translate(-50%,16px); opacity:0; pointer-events:none; z-index:60;
+  max-width:min(400px,calc(100vw - 28px));
+  padding:11px 15px; background:var(--bg4); color:var(--t1);
+  border:1px solid var(--line2); border-radius:12px;
+  font-size:12px; line-height:1.45; text-align:center;
+  box-shadow:0 10px 34px rgba(0,0,0,.45);
+  transition:opacity var(--t-med), transform var(--t-med) var(--ez);
+}
+#toast.on{ opacity:1; transform:translate(-50%,0); }
+
+/* ============================ dialog ============================ */
+.ovl{
+  position:fixed; inset:0; z-index:70; display:flex; align-items:center; justify-content:center;
+  padding:18px; background:rgba(0,0,0,.62); opacity:0; pointer-events:none;
+  transition:opacity var(--t-med);
+}
+@supports (backdrop-filter:blur(1px)){ .ovl{ backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); } }
+.ovl.on{ opacity:1; pointer-events:auto; }
+.ovl .sheet{
+  width:100%; max-width:380px; background:var(--bg2);
+  border:1px solid var(--line2); border-radius:var(--r3); padding:20px;
+  transform:translateY(18px) scale(.97); transition:transform var(--t-slow) var(--ez);
+  max-height:calc(100vh - 36px); overflow:auto;
+}
+.ovl.on .sheet{ transform:none; }
+.ovl h3{ margin:0 0 7px; font-size:15px; font-weight:650; }
+.ovl p{ margin:0 0 14px; font-size:12px; line-height:1.55; color:var(--t2); }
+.ovl .acts{ display:flex; gap:8px; }
+.ovl .acts .btn{ flex:1 1 0; }
+
+/* ============================ touch bar ============================ */
+nav.bar{
+  position:fixed; left:50%; transform:translateX(-50%);
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  width:min(420px,calc(100vw - 24px)); z-index:50;
+  display:flex; gap:0; padding:5px;
+  background:color-mix(in srgb, var(--bg2) 82%, transparent);
+  background:var(--bg2);
+  border:1px solid var(--line2); border-radius:18px;
+  box-shadow:0 8px 30px rgba(0,0,0,.4);
+}
+@supports (backdrop-filter:blur(1px)){
+  nav.bar{ background:color-mix(in srgb, var(--bg2) 72%, transparent); backdrop-filter:blur(18px) saturate(1.4); -webkit-backdrop-filter:blur(18px) saturate(1.4); }
+}
+nav.bar .pill{
+  position:absolute; top:5px; height:calc(100% - 10px);
+  background:var(--bg4); border-radius:14px; z-index:0;
+  transition:transform .32s var(--ez), width .32s var(--ez);
+}
+nav.bar button{
+  position:relative; z-index:1; flex:1 1 0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  min-height:50px; padding:5px 2px; border:0; background:none; cursor:pointer;
+  color:var(--t3); transition:color var(--t-med), transform 80ms var(--ez);
+}
+nav.bar button:active{ transform:scale(.93); }
+nav.bar button .ic{ font-size:15px; line-height:1; transition:transform .3s var(--ezs); }
+nav.bar button .lb{ font-size:10.5px; letter-spacing:.01em; white-space:nowrap; }
+nav.bar button[aria-selected=true]{ color:var(--t1); }
+nav.bar button[aria-selected=true] .ic{ transform:translateY(-1px) scale(1.16); }
+nav.bar button .bdg{
+  position:absolute; top:4px; right:50%; margin-right:-20px;
+  min-width:15px; height:15px; padding:0 4px; border-radius:999px;
+  background:var(--on); color:var(--onb);
+  font-size:9px; font-weight:700; line-height:15px; text-align:center;
+}
+
+/* ============================ customize mode ============================ */
+body.cz .card[data-cz]{ animation:wob 1.7s ease-in-out infinite; }
+body.cz .card[data-cz] h2 .grip{ display:inline; }
+body.cz .card[data-cz]{ border-style:dashed; border-color:var(--t4); }
+body.cz nav.bar{ border-color:var(--t2); }
+@keyframes wob{ 0%,100%{ transform:rotate(-.35deg) } 50%{ transform:rotate(.35deg) } }
+.card.lift{
+  position:fixed; z-index:80; margin:0; pointer-events:none;
+  transform:rotate(1.2deg) scale(1.04); box-shadow:0 18px 44px rgba(0,0,0,.5);
+  animation:none!important; opacity:.96;
+}
+.ph{ border:1px dashed var(--t4); border-radius:var(--r2); margin:0 0 12px; background:var(--bg3); }
+.dragging{ touch-action:none; user-select:none; -webkit-user-select:none; }
+
+@media (max-width:420px){
+  .mark h1{ font-size:13px; }
+  .stat b{ font-size:18px; }
+  nav.bar button .lb{ font-size:9.5px; }
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
+}
+</style>
+</head>
+<body>
+<a class="sr" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="mark">
+    <div class="sq" aria-hidden="true">S</div>
+    <div>
+      <h1>S Solver Admin<span class="sub" id="hsub">Not signed in</span></h1>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <span class="lamp" id="lamp" title="Connection to the admin database"><span class="dot"></span><span id="lampt">Offline</span></span>
+</header>
+
+<main id="main">
+
+<!-- ============================ sign in ============================ -->
+<section class="view on" id="v-login" role="tabpanel" aria-label="Sign in">
+  <div class="card in">
+    <h2>Sign in</h2>
+    <p class="hint">Your PIN, or the long password. Either is checked by the database, not by this page, so a wrong one gets nothing back. After ten wrong tries the PIN stops working for a few minutes; the long password always works.</p>
+    <form id="loginform" autocomplete="off">
+      <label class="fld" for="pw"><span>PIN or password</span>
+        <input type="password" id="pw" autocomplete="current-password" spellcheck="false" placeholder="PIN" required inputmode="numeric">
+      </label>
+      <label class="sw" id="remember" role="switch" aria-checked="false" tabindex="0">
+        <span class="txt"><b>Stay signed in on this tab</b><i>Kept in this tab only, and forgotten when you close it. Never saved to the browser.</i></span>
+        <span class="track" aria-hidden="true"></span>
+      </label>
+      <div style="height:12px"></div>
+      <button class="btn pri wide" type="submit" id="loginbtn">Sign in</button>
+    </form>
+    <p class="note" id="loginerr" hidden></p>
+    <p class="note"><b>What this page is.</b> The control panel for S Solver: it switches the extension on or off for everyone, and blocks or pauses one device at a time. It needs a connection — nothing here works offline.</p>
+  </div>
+</section>
+
+<!-- ============================ devices ============================ -->
+<section class="view" id="v-devices" role="tabpanel" aria-label="Devices" hidden>
+  <div class="stats" id="stats">
+    <div class="stat"><b id="s-all">0</b><span>Devices</span></div>
+    <div class="stat"><b id="s-live">0</b><span>Active now</span></div>
+    <div class="stat"><b id="s-out">0</b><span>Paused</span></div>
+    <div class="stat"><b id="s-ban">0</b><span>Blocked</span></div>
+  </div>
+
+  <div class="card in">
+    <h2>Find a device</h2>
+    <label class="fld" for="q" style="margin:0 0 9px"><span class="sr">Search</span>
+      <input type="search" id="q" placeholder="Search name, device or id" autocomplete="off" spellcheck="false">
+    </label>
+    <div class="seg" id="filter" role="group" aria-label="Filter devices">
+      <button type="button" data-f="all" aria-pressed="true">All</button>
+      <button type="button" data-f="ok" aria-pressed="false">Allowed</button>
+      <button type="button" data-f="timeout" aria-pressed="false">Paused</button>
+      <button type="button" data-f="ban" aria-pressed="false">Blocked</button>
+    </div>
+    <div style="height:7px"></div>
+    <div class="seg" id="sort" role="group" aria-label="Sort devices">
+      <button type="button" data-s="seen" aria-pressed="true">Last seen</button>
+      <button type="button" data-s="name" aria-pressed="false">Name</button>
+      <button type="button" data-s="first" aria-pressed="false">Newest</button>
+    </div>
+  </div>
+
+  <div id="list" aria-live="polite"></div>
+</section>
+
+<!-- ============================ global ============================ -->
+<section class="view" id="v-global" role="tabpanel" aria-label="Everyone" hidden>
+  <div class="card in" data-cz="power" id="cz-power">
+    <h2><span class="grip" aria-hidden="true">::</span>Switch for everyone</h2>
+    <div class="big">
+      <span class="ic" id="g-ic" aria-hidden="true">&#9679;</span>
+      <span class="tx"><b id="g-state">Checking…</b><i id="g-when">&nbsp;</i></span>
+    </div>
+    <button class="sw" id="g-switch" role="switch" aria-checked="true" tabindex="0">
+      <span class="txt"><b>S Solver is on</b><i>Turn this off and every device stops working within a second or two, whoever they are. Turn it back on and they all carry on.</i></span>
+      <span class="track" aria-hidden="true"></span>
+    </button>
+    <p class="hint" style="margin:12px 0 0">Every device listens for changes, so this reaches everyone in a second or two. A check every minute covers anything that misses.</p>
+  </div>
+
+  <div class="card in" data-cz="msg" id="cz-msg">
+    <h2><span class="grip" aria-hidden="true">::</span>Shutdown message</h2>
+    <p class="hint">What the pop-up says on every device while S Solver is switched off. Keep it short — it is read on a phone as well.</p>
+    <label class="fld" for="g-msg"><span class="sr">Shutdown message</span>
+      <textarea id="g-msg" maxlength="200" placeholder="S Solver is shut down right now. Please try again later."></textarea>
+    </label>
+    <div class="row-btns">
+      <button class="btn" type="button" id="g-save">Save message</button>
+      <button class="btn sm" type="button" id="g-reset">Use the standard one</button>
+    </div>
+    <p class="hint" style="margin:10px 0 0"><span id="g-left">200</span> characters left</p>
+  </div>
+
+  <div class="card in" data-cz="prev" id="cz-prev">
+    <h2><span class="grip" aria-hidden="true">::</span>What they will see</h2>
+    <p class="hint">The pop-up exactly as it appears on a device, with the message above.</p>
+    <div id="prevbox"></div>
+    <div class="seg" id="prevpick" role="group" aria-label="Which pop-up to preview" style="margin-top:9px">
+      <button type="button" data-p="off" aria-pressed="true">Switched off</button>
+      <button type="button" data-p="ban" aria-pressed="false">Blocked</button>
+      <button type="button" data-p="timeout" aria-pressed="false">Paused</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ log ============================ -->
+<section class="view" id="v-log" role="tabpanel" aria-label="Log" hidden>
+  <div class="card in">
+    <h2>What you have done</h2>
+    <p class="hint">Kept on this computer only, so you can see what was changed and when. It is not sent anywhere and the devices never see it.</p>
+    <div id="log"></div>
+    <div class="row-btns" style="margin-top:12px">
+      <button class="btn sm" type="button" id="log-copy">Copy</button>
+      <button class="btn sm" type="button" id="log-save">Save to a file</button>
+      <button class="btn sm danger" type="button" id="log-clear">Clear</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ options ============================ -->
+<section class="view" id="v-opts" role="tabpanel" aria-label="Options" hidden>
+  <div class="card in">
+    <h2>Look</h2>
+    <label class="fld"><span>Theme</span>
+      <div class="seg" id="o-theme" role="group" aria-label="Theme">
+        <button type="button" data-v="dark" aria-pressed="true">Dark</button>
+        <button type="button" data-v="light" aria-pressed="false">Light</button>
+        <button type="button" data-v="paper" aria-pressed="false">Warm</button>
+      </div>
+    </label>
+    <label class="fld" style="margin-bottom:0"><span>Spacing</span>
+      <div class="seg" id="o-density" role="group" aria-label="Spacing">
+        <button type="button" data-v="compact" aria-pressed="false">Tight</button>
+        <button type="button" data-v="normal" aria-pressed="true">Normal</button>
+        <button type="button" data-v="roomy" aria-pressed="false">Roomy</button>
+      </div>
+    </label>
+  </div>
+
+  <div class="card in">
+    <h2>Refreshing</h2>
+    <label class="fld"><span>Check the list every</span>
+      <div class="seg" id="o-poll" role="group" aria-label="Refresh rate">
+        <button type="button" data-v="10" aria-pressed="false">10s</button>
+        <button type="button" data-v="30" aria-pressed="true">30s</button>
+        <button type="button" data-v="60" aria-pressed="false">1m</button>
+        <button type="button" data-v="0" aria-pressed="false">Off</button>
+      </div>
+    </label>
+    <label class="sw" id="o-quiet" role="switch" aria-checked="false" tabindex="0">
+      <span class="txt"><b>Ask before blocking</b><i>Shows a yes-or-no box before a device is blocked or paused. Unblocking never asks.</i></span>
+      <span class="track" aria-hidden="true"></span>
+    </label>
+    <div style="height:7px"></div>
+    <label class="sw" id="o-countdown" role="switch" aria-checked="true" tabindex="0">
+      <span class="txt"><b>Live countdown</b><i>Paused devices count down every second in the list. Turn off on a slow computer.</i></span>
+      <span class="track" aria-hidden="true"></span>
+    </label>
+  </div>
+
+  <div class="card in">
+    <h2>How long to pause for</h2>
+    <p class="hint">The buttons offered on each device. Minutes, separated by commas.</p>
+    <label class="fld" for="o-presets" style="margin-bottom:9px"><span class="sr">Pause lengths in minutes</span>
+      <input type="text" id="o-presets" placeholder="5, 15, 30, 60, 240, 1440" autocomplete="off" spellcheck="false">
+    </label>
+    <button class="btn sm" type="button" id="o-presets-save">Save lengths</button>
+  </div>
+
+  <div class="card in">
+    <h2>This page</h2>
+    <div class="row-btns">
+      <button class="btn sm" type="button" id="o-cz">Rearrange the cards</button>
+      <button class="btn sm" type="button" id="o-czreset">Put them back</button>
+    </div>
+    <div style="height:9px"></div>
+    <div class="row-btns">
+      <button class="btn sm" type="button" id="o-export">Save my settings</button>
+      <button class="btn sm" type="button" id="o-import">Load settings</button>
+      <button class="btn sm danger" type="button" id="o-wipe">Forget everything</button>
+    </div>
+    <input type="file" id="o-file" accept=".json,application/json" hidden>
+    <p class="note"><b>What is kept here.</b> Only your own settings and the log of what you have done, on this computer. The password is never saved. The device list always comes from the database.</p>
+  </div>
+
+  <div class="card in">
+    <h2>Sign out</h2>
+    <p class="hint">Forgets the password for this tab and goes back to the sign-in screen.</p>
+    <button class="btn wide danger" type="button" id="o-signout">Sign out</button>
+  </div>
+</section>
+
+</main>
+
+<nav class="bar" id="bar" role="tablist" aria-label="Sections" hidden>
+  <span class="pill" id="pill" aria-hidden="true"></span>
+  <button type="button" role="tab" data-v="devices" aria-selected="true" aria-controls="v-devices"><span class="ic" aria-hidden="true">&#9707;</span><span class="lb">Devices</span><span class="bdg" id="bdg" hidden>0</span></button>
+  <button type="button" role="tab" data-v="global" aria-selected="false" aria-controls="v-global"><span class="ic" aria-hidden="true">&#9211;</span><span class="lb">Everyone</span></button>
+  <button type="button" role="tab" data-v="log" aria-selected="false" aria-controls="v-log"><span class="ic" aria-hidden="true">&#9776;</span><span class="lb">Log</span></button>
+  <button type="button" role="tab" data-v="opts" aria-selected="false" aria-controls="v-opts"><span class="ic" aria-hidden="true">&#9881;</span><span class="lb">Options</span></button>
+</nav>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<div class="ovl" id="ask" role="dialog" aria-modal="true" aria-labelledby="ask-t" aria-describedby="ask-p">
+  <div class="sheet">
+    <h3 id="ask-t">Are you sure?</h3>
+    <p id="ask-p">This cannot be undone.</p>
+    <div class="acts">
+      <button class="btn" type="button" id="ask-no">Cancel</button>
+      <button class="btn pri" type="button" id="ask-yes">Yes</button>
+    </div>
+  </div>
+</div>
+<script>
+"use strict";
+/* ======================================================================
+   S Solver Admin — one page, no build step, no libraries.
+   Talks to the admin database over HTTPS. The password is never stored
+   on disk: it lives in this tab only, and only while you choose that.
+   ====================================================================== */
+(function () {
+
+/* ---------------------------------------------------------------- config */
+var API = "https://gvclirykhpwueofpvjeq.supabase.co/rest/v1/rpc/";
+var KEY = "sb_publishable_H1cXgf6C_eD-0kMbkDlB1A_e0NzvT0J";
+var STD_MSG = "S Solver is shut down right now. Please try again later.";
+var LSK = "sx.admin.v1";
+var SSK = "sx.admin.pw";
+
+/* ---------------------------------------------------------------- helpers */
+function $(id) { return document.getElementById(id); }
+function el(tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
+function on(node, ev, fn, opt) { if (node) node.addEventListener(ev, fn, opt || false); }
+function uid() {
+  try { if (crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+  return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+}
+function num(n) {
+  n = Number(n) || 0;
+  try { return n.toLocaleString("en-GB"); } catch (e) {}
+  var s = String(Math.floor(Math.abs(n))), out = "", c = 0;
+  for (var i = s.length - 1; i >= 0; i--) { out = s[i] + out; if (++c % 3 === 0 && i) out = "," + out; }
+  return (n < 0 ? "-" : "") + out;
+}
+function clone(o) {
+  try { if (typeof structuredClone === "function") return structuredClone(o); } catch (e) {}
+  try { return JSON.parse(JSON.stringify(o)); } catch (e) { return o; }
+}
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+/* a length of time in words, for both the countdown and "last seen" */
+function spell(ms, pad) {
+  if (!isFinite(ms) || ms < 0) ms = 0;
+  var s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600),
+      m = Math.floor(s % 3600 / 60), ss = s % 60, p = function (n) { return (n < 10 ? "0" : "") + n; };
+  if (d > 0) return d + (d === 1 ? "d " : "d ") + p(h) + ":" + p(m) + ":" + p(ss);
+  if (pad || h > 0) return p(h) + ":" + p(m) + ":" + p(ss);
+  return p(m) + ":" + p(ss);
+}
+function ago(then) {
+  if (!then) return "never";
+  var s = Math.round((Date.now() - then) / 1000);
+  if (s < 0) s = 0;
+  if (s < 45) return "just now";
+  if (s < 90) return "a minute ago";
+  if (s < 3600) return Math.round(s / 60) + " minutes ago";
+  if (s < 5400) return "an hour ago";
+  if (s < 86400) return Math.round(s / 3600) + " hours ago";
+  if (s < 172800) return "yesterday";
+  if (s < 2592000) return Math.round(s / 86400) + " days ago";
+  return Math.round(s / 2592000) + " months ago";
+}
+function when(t) {
+  if (!t) return "—";
+  var d = new Date(t);
+  if (isNaN(+d)) return "—";
+  try { return d.toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }); } catch (e) {}
+  return d.toISOString().slice(0, 16).replace("T", " ");
+}
+function initials(s) {
+  s = String(s || "").trim();
+  if (!s) return "?";
+  var p = s.split(/\s+/).filter(Boolean);
+  if (p.length >= 2) return (p[0][0] + p[1][0]).toUpperCase();
+  return s.slice(0, 2).toUpperCase();
+}
+
+/* ---------------------------------------------------------------- toast */
+var toastT = null;
+function say(msg, long) {
+  var t = $("toast");
+  if (!t) return;
+  t.textContent = String(msg);
+  t.classList.add("on");
+  if (toastT) clearTimeout(toastT);
+  toastT = setTimeout(function () { t.classList.remove("on"); }, long ? 5200 : 2600);
+}
+
+/* ---------------------------------------------------------------- confirm box */
+var askFn = null;
+function confirmBox(title, body, yes, fn) {
+  var o = $("ask");
+  $("ask-t").textContent = title;
+  $("ask-p").textContent = body;
+  $("ask-yes").textContent = yes || "Yes";
+  askFn = fn;
+  o.classList.add("on");
+  setTimeout(function () { $("ask-yes").focus(); }, 60);
+}
+function closeAsk() { $("ask").classList.remove("on"); askFn = null; }
+on($("ask-no"), "click", closeAsk);
+on($("ask-yes"), "click", function () { var f = askFn; closeAsk(); if (f) f(); });
+on($("ask"), "click", function (e) { if (e.target === this) closeAsk(); });
+on(document, "keydown", function (e) {
+  if (e.key === "Escape" && $("ask").classList.contains("on")) { e.preventDefault(); closeAsk(); }
+});
+
+/* ---------------------------------------------------------------- settings, kept locally */
+var DEF = {
+  theme: "dark", density: "normal", poll: 30, quiet: false, countdown: true,
+  presets: [5, 15, 30, 60, 240, 1440], order: [], log: []
+};
+var S = clone(DEF);
+var memOnly = false;
+
+function loadS() {
+  var raw = null;
+  try { raw = localStorage.getItem(LSK); } catch (e) { memOnly = true; }
+  if (!raw) return;
+  try {
+    var o = JSON.parse(raw);
+    if (o && typeof o === "object") {
+      Object.keys(DEF).forEach(function (k) { if (o[k] != null) S[k] = o[k]; });
+      if (!Array.isArray(S.presets) || !S.presets.length) S.presets = clone(DEF.presets);
+      if (!Array.isArray(S.log)) S.log = [];
+      if (!Array.isArray(S.order)) S.order = [];
+      S.poll = clamp(Number(S.poll) || 0, 0, 3600);
+    }
+  } catch (e) { /* a damaged file must not stop the page opening */ }
+}
+function saveS() {
+  if (memOnly) return;
+  try { localStorage.setItem(LSK, JSON.stringify(S)); }
+  catch (e) {
+    memOnly = true;
+    say("This browser will not let the page save settings, so they will be forgotten when you close it.", true);
+  }
+}
+function note(text) {
+  S.log.unshift({ t: Date.now(), m: String(text).slice(0, 200) });
+  if (S.log.length > 400) S.log.length = 400;
+  saveS();
+  if (view === "log") drawLog();
+}
+
+/* ---------------------------------------------------------------- the database */
+var PW = "";
+function rpc(fn, body) {
+  var ctl = new AbortController(), tm = setTimeout(function () { ctl.abort(); }, 15000);
+  return fetch(API + fn, {
+    method: "POST", signal: ctl.signal, credentials: "omit",
+    headers: { "Content-Type": "application/json", apikey: KEY, Authorization: "Bearer " + KEY },
+    body: JSON.stringify(body || {})
+  }).then(function (r) {
+    clearTimeout(tm);
+    return r.text().then(function (txt) {
+      var d = null;
+      try { d = txt ? JSON.parse(txt) : null; } catch (e) {}
+      if (!r.ok) {
+        var m = (d && (d.message || d.hint)) || ("the database answered " + r.status);
+        if (/wrong admin password|not right/i.test(m)) throw mk("badpw", "That password is not right.");
+        if (/no such device|no longer in the list/i.test(m)) throw mk("nodev", "That device is no longer in the list.");
+        throw mk("server", m);
+      }
+      /* a refusal now comes back as a normal answer carrying an error, so the database can
+         keep count of wrong tries - raising an error would roll that count back */
+      if (d && typeof d === "object" && d.error) {
+        if (d.locked) throw mk("locked", d.error);
+        if (/not right/i.test(d.error)) throw mk("badpw", d.error);
+        if (/no longer in the list/i.test(d.error)) throw mk("nodev", d.error);
+        throw mk("server", d.error);
+      }
+      return d;
+    });
+  }).catch(function (e) {
+    clearTimeout(tm);
+    if (e && e.code) throw e;
+    if (e && e.name === "AbortError") throw mk("net", "The database did not answer in time.");
+    throw mk("net", "Could not reach the database — check the connection.");
+  });
+}
+function mk(code, msg) { var e = new Error(msg); e.code = code; return e; }
+
+function setLamp(state, text) {
+  var l = $("lamp");
+  l.className = "lamp" + (state ? " " + state : "");
+  $("lampt").textContent = text;
+  l.title = state === "ok" ? "Connected to the admin database" : state === "bad" ? "Cannot reach the admin database" : "Not connected";
+}
+
+/* ---------------------------------------------------------------- state from the server */
+var DATA = { enabled: true, message: STD_MSG, updated: 0, devices: [], at: 0, skew: 0 };
+var filter = "all", sortBy = "seen", query = "", openId = null;
+var view = "login", signedIn = false;
+
+/* the server's clock decides when a pause ends, so work out the difference once per answer */
+function serverNow() { return Date.now() - DATA.skew; }
+function tOf(v) { var t = v ? +new Date(v) : 0; return isFinite(t) ? t : 0; }
+
+/* ---------------------------------------------------------------- drawing: devices */
+function shown() {
+  var q = query.trim().toLowerCase();
+  var out = DATA.devices.filter(function (d) {
+    if (filter !== "all" && statusOf(d) !== filter) return false;
+    if (!q) return true;
+    return (d.name + " " + d.device_type + " " + d.browser + " " + d.device_id + " " + d.version).toLowerCase().indexOf(q) >= 0;
+  });
+  out.sort(function (a, b) {
+    if (sortBy === "name") {
+      var an = (a.name || "zzz").toLowerCase(), bn = (b.name || "zzz").toLowerCase();
+      if (an !== bn) return an < bn ? -1 : 1;
+      return tOf(b.last_seen) - tOf(a.last_seen);
+    }
+    if (sortBy === "first") return tOf(b.first_seen) - tOf(a.first_seen);
+    return tOf(b.last_seen) - tOf(a.last_seen);
+  });
+  return out;
+}
+function statusOf(d) {
+  if (d.status === "ban") return "ban";
+  if (d.status === "timeout" && tOf(d.until) > serverNow()) return "timeout";
+  return "ok";
+}
+function liveNow(d) { return Date.now() - tOf(d.last_seen) < 150000; }
+
+function drawStats() {
+  var all = DATA.devices;
+  var live = 0, out = 0, ban = 0;
+  all.forEach(function (d) {
+    var s = statusOf(d);
+    if (s === "ban") ban++; else if (s === "timeout") out++;
+    if (liveNow(d)) live++;
+  });
+  count($("s-all"), all.length); count($("s-live"), live); count($("s-out"), out); count($("s-ban"), ban);
+  var b = $("bdg"), n = ban + out;
+  if (n > 0) { b.hidden = false; b.textContent = n > 99 ? "99+" : String(n); }
+  else b.hidden = true;
+}
+/* numbers count up rather than snapping */
+function count(node, to) {
+  if (!node) return;
+  var from = parseInt(String(node.textContent).replace(/[^0-9-]/g, ""), 10);
+  if (!isFinite(from)) from = 0;
+  if (from === to) { node.textContent = num(to); return; }
+  var reduce = false;
+  try { reduce = matchMedia("(prefers-reduced-motion:reduce)").matches; } catch (e) {}
+  if (reduce || Math.abs(to - from) > 400) { node.textContent = num(to); return; }
+  var t0 = performance.now(), dur = 320;
+  (function step(t) {
+    var k = clamp((t - t0) / dur, 0, 1), e = 1 - Math.pow(1 - k, 3);
+    node.textContent = num(Math.round(from + (to - from) * e));
+    if (k < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
+function drawList(fresh) {
+  var box = $("list");
+  if (!box) return;
+  var rows = shown();
+  if (!rows.length) {
+    box.innerHTML = "";
+    var e = el("div", "empty");
+    e.appendChild(el("b", null, DATA.devices.length ? "Nothing matches" : "No devices yet"));
+    e.appendChild(el("span", null, DATA.devices.length
+      ? "Try a different search, or choose All above."
+      : "A device appears here the moment S Solver is installed on it and checks in. That happens within a minute of the extension being loaded."));
+    box.appendChild(e);
+    return;
+  }
+  var keep = openId;
+  box.innerHTML = "";
+  rows.forEach(function (d, i) {
+    var st = statusOf(d);
+    var wrap = el("div");
+
+    var row = el("div", "dev" + (fresh ? " in" : "") + (keep === d.device_id ? " open" : ""));
+    if (fresh) row.style.animationDelay = Math.min(i * 45, 400) + "ms";
+    row.setAttribute("role", "button");
+    row.setAttribute("tabindex", "0");
+    row.setAttribute("aria-expanded", keep === d.device_id ? "true" : "false");
+
+    var ava = el("div", "ava", initials(d.name || d.device_type));
+    ava.setAttribute("aria-hidden", "true");
+    row.appendChild(ava);
+
+    var who = el("div", "who");
+    who.appendChild(el("b", null, d.name || "No name given"));
+    var line = (d.device_type || "Unknown device") + (d.browser ? " · " + d.browser : "") + " · seen " + ago(tOf(d.last_seen));
+    who.appendChild(el("span", null, line));
+    row.appendChild(who);
+
+    var stb = el("div", "st");
+    var tag = el("span", "tag " + st, st === "ban" ? "Blocked" : st === "timeout" ? "Paused" : liveNow(d) ? "Active" : "Allowed");
+    if (st === "ok" && !liveNow(d)) tag.className = "tag off";
+    stb.appendChild(tag);
+    if (st === "timeout") {
+      var cd = el("span", "cd run");
+      cd.setAttribute("data-until", String(tOf(d.until)));
+      cd.textContent = spell(tOf(d.until) - serverNow(), true);
+      stb.appendChild(cd);
+    }
+    row.appendChild(stb);
+    row.appendChild(el("div", "chev", "›"));
+
+    var pan = el("div", "panel" + (keep === d.device_id ? " open" : ""));
+    pan.appendChild(details(d, st));
+
+    function toggle() {
+      var isOpen = pan.classList.contains("open");
+      // only one open at a time, so the list stays short
+      Array.prototype.forEach.call(box.querySelectorAll(".panel.open"), function (p) { p.classList.remove("open"); });
+      Array.prototype.forEach.call(box.querySelectorAll(".dev.open"), function (r) { r.classList.remove("open"); r.setAttribute("aria-expanded", "false"); });
+      if (!isOpen) {
+        pan.classList.add("open"); row.classList.add("open"); row.setAttribute("aria-expanded", "true");
+        openId = d.device_id;
+      } else openId = null;
+    }
+    on(row, "click", function (e) { if (!e.target.closest("button,input")) toggle(); });
+    on(row, "keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+    });
+    wrap.appendChild(row); wrap.appendChild(pan);
+    box.appendChild(wrap);
+  });
+}
+
+/* the open drawer under one device: everything known about it, and the buttons */
+function details(d, st) {
+  var inner = el("div", "inner");
+
+  var kv = el("dl", "kv");
+  [["Name", d.name || "not given"],
+   ["Device", (d.device_type || "unknown") + (d.browser ? " · " + d.browser : "")],
+   ["S Solver", d.version ? "v" + d.version : "unknown"],
+   ["First seen", when(d.first_seen)],
+   ["Last seen", when(d.last_seen) + " (" + ago(tOf(d.last_seen)) + ")"],
+   ["Id", d.device_id]
+  ].forEach(function (p) { kv.appendChild(el("dt", null, p[0])); kv.appendChild(el("dd", null, p[1])); });
+  if (st === "timeout") { kv.appendChild(el("dt", null, "Pause ends")); kv.appendChild(el("dd", null, when(d.until))); }
+  if (d.reason) { kv.appendChild(el("dt", null, "Note")); kv.appendChild(el("dd", null, d.reason)); }
+  inner.appendChild(kv);
+
+  if (st !== "ok") {
+    var back = el("div", "row-btns");
+    var allow = el("button", "btn pri sm", st === "ban" ? "Unblock this device" : "End the pause now");
+    allow.type = "button";
+    on(allow, "click", function () { act(this, d, "ok", 0, "", (st === "ban" ? "Unblocked " : "Pause ended for ") + label(d)); });
+    back.appendChild(allow);
+    inner.appendChild(back);
+    inner.appendChild(el("p", "hint", st === "ban"
+      ? "It starts working again on its own, in a second or two."
+      : "Or leave it — it starts working again by itself when the time runs out."));
+  }
+
+  var lab = el("div", "hint", st === "ok" ? "Pause it for a while" : "Change the pause");
+  lab.style.margin = "12px 0 6px";
+  inner.appendChild(lab);
+
+  var mins = el("div", "mins");
+  S.presets.forEach(function (m) {
+    m = Math.round(Number(m) || 0);
+    if (m < 1) return;
+    var b = el("button", "btn sm", m >= 1440 ? (m / 1440 === 1 ? "1 day" : (Math.round(m / 144) / 10) + " days") : m >= 60 ? (m / 60 === 1 ? "1 hour" : (Math.round(m / 6) / 10) + " hours") : m + " min");
+    b.type = "button";
+    on(b, "click", function () { pause(this, d, m); });
+    mins.appendChild(b);
+  });
+  var own = el("input");
+  own.type = "number"; own.min = "1"; own.max = "525600"; own.step = "1";
+  own.placeholder = "minutes"; own.setAttribute("aria-label", "Pause " + label(d) + " for how many minutes");
+  var ownGo = el("button", "btn sm", "Pause");
+  ownGo.type = "button";
+  function custom(btn) {
+    var m = Math.round(Number(own.value));
+    if (!isFinite(m) || m < 1 || m > 525600) {
+      own.classList.add("shake");
+      setTimeout(function () { own.classList.remove("shake"); }, 340);
+      say(own.value ? "Give a number of minutes between 1 and 525600." : "Type how many minutes first.");
+      own.focus();
+      return;
+    }
+    pause(btn, d, m);
+  }
+  on(ownGo, "click", function () { custom(this); });
+  on(own, "keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); custom(ownGo); } });
+  mins.appendChild(own); mins.appendChild(ownGo);
+  inner.appendChild(mins);
+
+  if (st !== "ban") {
+    var bb = el("div", "row-btns");
+    bb.style.marginTop = "10px";
+    var ban = el("button", "btn sm danger", "Block this device");
+    ban.type = "button";
+    on(ban, "click", function () {
+      var btn = this;
+      go(function () { act(btn, d, "ban", 0, "", "Blocked " + label(d)); },
+         "Block this device?", label(d) + " stops working within a second or two, and stays blocked until you unblock it.", "Block it");
+    });
+    bb.appendChild(ban);
+    inner.appendChild(bb);
+  }
+  return inner;
+}
+function label(d) { return (d.name ? d.name : "the " + (d.device_type || "device")) + (d.name && d.device_type ? " (" + d.device_type + ")" : ""); }
+function go(fn, title, body, yes) { if (S.quiet) confirmBox(title, body, yes, fn); else fn(); }
+
+function pause(btn, d, m) {
+  go(function () { act(btn, d, "timeout", m, "", "Paused " + label(d) + " for " + (m >= 60 ? Math.round(m / 6) / 10 + " hours" : m + " minutes")); },
+     "Pause this device?", label(d) + " stops working for " + (m >= 60 ? Math.round(m / 6) / 10 + " hours" : m + " minutes") + ", then starts again by itself.", "Pause it");
+}
+
+/* one change to one device, then straight back to the server for the truth */
+function act(btn, d, status, minutes, reason, said) {
+  if (!btn || btn.classList.contains("spin")) return;
+  btn.classList.add("spin"); btn.disabled = true;
+  rpc("sx_admin_set_status", { p_pw: PW, p_device: d.device_id, p_status: status, p_minutes: minutes || 0, p_reason: reason || "" })
+    .then(function () { note(said); say(said); return pull(true); })
+    .catch(function (e) {
+      btn.classList.remove("spin"); btn.disabled = false;
+      if (e.code === "badpw") return signOut("The password was changed — sign in again.");
+      if (e.code === "nodev") { say("That device is no longer in the list."); return pull(true); }
+      say("Did not work: " + e.message, true);
+    });
+}
+
+/* ---------------------------------------------------------------- the live countdowns */
+var beat = null;
+function startBeat() {
+  if (beat) clearInterval(beat);
+  if (!S.countdown) return;
+  beat = setInterval(function () {
+    if (document.hidden) return;
+    var any = false;
+    Array.prototype.forEach.call(document.querySelectorAll(".cd[data-until]"), function (n) {
+      var until = Number(n.getAttribute("data-until")) || 0, left = until - serverNow();
+      if (left <= 0) { n.textContent = "00:00:00"; n.classList.remove("run"); any = true; }
+      else n.textContent = spell(left, true);
+    });
+    if (any) pull(true); // a pause has just run out: get the real state
+  }, 1000);
+}
+
+/* ---------------------------------------------------------------- global switch */
+function drawGlobal() {
+  var on_ = DATA.enabled;
+  $("g-ic").innerHTML = on_ ? "&#9679;" : "&#9675;";
+  $("g-state").textContent = on_ ? "On for everyone" : "Switched off for everyone";
+  $("g-when").textContent = DATA.updated
+    ? (on_ ? "Working normally. Last changed " : "Nobody can use it. Switched off ") + ago(DATA.updated)
+    : (on_ ? "Working normally." : "Nobody can use it.");
+  var sw = $("g-switch");
+  sw.setAttribute("aria-checked", on_ ? "true" : "false");
+  sw.querySelector("b").textContent = on_ ? "S Solver is on" : "S Solver is off";
+  var m = $("g-msg");
+  if (document.activeElement !== m) m.value = DATA.message || "";
+  left();
+  preview();
+}
+function left() { $("g-left").textContent = String(200 - ($("g-msg").value || "").length); }
+
+function setGlobal(wantOn) {
+  var sw = $("g-switch");
+  if (sw.dataset.busy === "1") return;
+  var send = function () {
+    sw.dataset.busy = "1";
+    rpc("sx_admin_set_global", { p_pw: PW, p_enabled: !!wantOn, p_message: null })
+      .then(function () {
+        var said = wantOn ? "Switched S Solver back on for everyone" : "Switched S Solver off for everyone";
+        note(said); say(said + " — it reaches every device in a second or two.", true);
+        return pull(true);
+      })
+      .catch(function (e) {
+        if (e.code === "badpw") return signOut("The password was changed — sign in again.");
+        say("Did not work: " + e.message, true);
+        drawGlobal();
+      })
+      .then(function () { sw.dataset.busy = "0"; });
+  };
+  if (!wantOn) confirmBox("Switch S Solver off for everyone?",
+    "Every device stops working within a second or two and sees the shutdown message. You can switch it back on here at any time.",
+    "Switch it off", send);
+  else send();
+}
+on($("g-switch"), "click", function () { setGlobal(this.getAttribute("aria-checked") !== "true"); });
+on($("g-switch"), "keydown", function (e) {
+  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setGlobal(this.getAttribute("aria-checked") !== "true"); }
+});
+on($("g-msg"), "input", function () { left(); preview(); });
+on($("g-save"), "click", function () {
+  var btn = this, txt = ($("g-msg").value || "").trim();
+  if (!txt) {
+    $("g-msg").classList.add("shake");
+    setTimeout(function () { $("g-msg").classList.remove("shake"); }, 340);
+    say("Type a message first, or press the standard one.");
+    return;
+  }
+  btn.classList.add("spin"); btn.disabled = true;
+  rpc("sx_admin_set_global", { p_pw: PW, p_enabled: DATA.enabled, p_message: txt })
+    .then(function () { note("Changed the shutdown message"); say("Message saved."); return pull(true); })
+    .catch(function (e) {
+      if (e.code === "badpw") return signOut("The password was changed — sign in again.");
+      say("Did not work: " + e.message, true);
+    })
+    .then(function () { btn.classList.remove("spin"); btn.disabled = false; });
+});
+on($("g-reset"), "click", function () { $("g-msg").value = STD_MSG; left(); preview(); $("g-save").focus(); });
+
+/* ---------------------------------------------------------------- the pop-up preview */
+var prevKind = "off";
+function preview() {
+  var box = $("prevbox");
+  if (!box) return;
+  var msg = ($("g-msg").value || "").trim() || STD_MSG;
+  var o = prevKind === "ban"
+    ? { ic: "&#10005;", t: "This device is blocked", m: "S Solver has been blocked on this device. It will stay blocked until it is unblocked.", timer: false }
+    : prevKind === "timeout"
+    ? { ic: "&#9201;", t: "Paused for a while", m: "S Solver has been paused on this device. It starts working again by itself when the time below runs out.", timer: true }
+    : { ic: "&#9211;", t: "S Solver is switched off", m: msg, timer: false };
+  box.innerHTML = "";
+  var card = el("div");
+  card.style.cssText = "background:var(--bg4);border:1px solid var(--line2);border-radius:16px;padding:18px 16px;text-align:center";
+  var ic = el("div");
+  ic.style.cssText = "width:44px;height:44px;margin:0 auto 11px;border-radius:13px;background:var(--bg2);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:19px";
+  ic.innerHTML = o.ic;
+  ic.setAttribute("aria-hidden", "true");
+  card.appendChild(ic);
+  var h = el("div", null, o.t);
+  h.style.cssText = "font-size:15px;font-weight:650;margin:0 0 5px";
+  card.appendChild(h);
+  var p = el("div", null, o.m);
+  p.style.cssText = "font-size:11.5px;line-height:1.55;color:var(--t2)";
+  card.appendChild(p);
+  if (o.timer) {
+    var t = el("div");
+    t.style.cssText = "margin:13px 0 0;padding:11px;background:var(--bg2);border:1px solid var(--line2);border-radius:11px";
+    var tl = el("div", null, "STARTS WORKING AGAIN IN");
+    tl.style.cssText = "font-size:9.5px;letter-spacing:.09em;color:var(--t3);margin-bottom:4px";
+    var tv = el("div", "cd run", "00:14:59");
+    tv.style.cssText = "font-size:22px;font-weight:600;color:var(--t1)";
+    t.appendChild(tl); t.appendChild(tv);
+    card.appendChild(t);
+  }
+  var who = el("div", null, "Example name · Windows");
+  who.style.cssText = "margin:13px 0 0;font-size:10.5px;color:var(--t3)";
+  card.appendChild(who);
+  box.appendChild(card);
+}
+seg("prevpick", "p", function (v) { prevKind = v; preview(); });
+
+/* ---------------------------------------------------------------- log */
+function drawLog() {
+  var box = $("log");
+  if (!box) return;
+  box.innerHTML = "";
+  if (!S.log.length) {
+    var e = el("div", "empty");
+    e.appendChild(el("b", null, "Nothing yet"));
+    e.appendChild(el("span", null, "Every switch, block and pause you make is written down here."));
+    box.appendChild(e);
+    return;
+  }
+  S.log.slice(0, 200).forEach(function (r) {
+    var line = el("div", "logline");
+    var tm = el("time", null, when(r.t));
+    try { tm.dateTime = new Date(r.t).toISOString(); } catch (e) {}
+    line.appendChild(tm);
+    line.appendChild(el("span", null, r.m));
+    box.appendChild(line);
+  });
+  if (S.log.length > 200) box.appendChild(el("p", "hint", "Showing the most recent 200 of " + num(S.log.length) + ". Save to a file for all of them."));
+}
+function logText() {
+  return "S Solver admin log\n" + new Date().toISOString() + "\n\n" +
+    S.log.map(function (r) { return when(r.t) + "  " + r.m; }).join("\n") + "\n";
+}
+on($("log-copy"), "click", function () {
+  var t = logText();
+  var done = function () { say("Log copied."); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(done, function () { fallbackCopy(t, done); });
+  } else fallbackCopy(t, done);
+});
+function fallbackCopy(t, done) {
+  var a = el("textarea");
+  a.value = t;
+  a.style.cssText = "position:fixed;top:-9999px;left:-9999px";
+  document.body.appendChild(a); a.select();
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) {}
+  document.body.removeChild(a);
+  ok ? done() : say("This browser would not let the page copy. Save to a file instead.", true);
+}
+on($("log-save"), "click", function () { download("s-solver-admin-log.txt", logText(), "text/plain"); say("Saved."); });
+on($("log-clear"), "click", function () {
+  if (!S.log.length) { say("The log is already empty."); return; }
+  confirmBox("Clear the log?", "The " + num(S.log.length) + " lines on this computer are deleted. A copy is saved to a file first.", "Clear it", function () {
+    download("s-solver-admin-log-backup.txt", logText(), "text/plain");
+    S.log = []; saveS(); drawLog(); say("Cleared. A copy was saved to your downloads.");
+  });
+});
+function download(name, text, mime) {
+  try {
+    var b = new Blob([text], { type: (mime || "application/json") + ";charset=utf-8" });
+    var u = URL.createObjectURL(b), a = el("a");
+    a.href = u; a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(u); }, 800);
+  } catch (e) { say("Could not save the file here. Use Copy instead.", true); }
+}
+
+/* ---------------------------------------------------------------- segmented pickers */
+function seg(id, attr, fn) {
+  var box = $(id);
+  if (!box) return;
+  on(box, "click", function (e) {
+    var b = e.target.closest("button[data-" + attr + "]");
+    if (!b) return;
+    Array.prototype.forEach.call(box.querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+    fn(b.getAttribute("data-" + attr));
+  });
+}
+function segSet(id, attr, val) {
+  var box = $(id);
+  if (!box) return;
+  Array.prototype.forEach.call(box.querySelectorAll("button"), function (x) {
+    x.setAttribute("aria-pressed", x.getAttribute("data-" + attr) === String(val) ? "true" : "false");
+  });
+}
+function swSet(id, val) { var n = $(id); if (n) n.setAttribute("aria-checked", val ? "true" : "false"); }
+function swBind(id, get, set) {
+  var n = $(id);
+  if (!n) return;
+  var flip = function () { set(!get()); swSet(id, get()); saveS(); };
+  on(n, "click", flip);
+  on(n, "keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+}
+
+/* ---------------------------------------------------------------- options */
+function applyLook() {
+  document.documentElement.setAttribute("data-theme", S.theme);
+  document.documentElement.setAttribute("data-density", S.density);
+  segSet("o-theme", "v", S.theme); segSet("o-density", "v", S.density);
+  segSet("o-poll", "v", S.poll);
+  swSet("o-quiet", S.quiet); swSet("o-countdown", S.countdown);
+  $("o-presets").value = S.presets.join(", ");
+  movePill();
+}
+seg("o-theme", "v", function (v) { S.theme = v; saveS(); applyLook(); });
+seg("o-density", "v", function (v) { S.density = v; saveS(); applyLook(); setTimeout(movePill, 30); });
+seg("o-poll", "v", function (v) { S.poll = Number(v) || 0; saveS(); startPoll(); say(S.poll ? "Refreshing every " + S.poll + " seconds." : "Automatic refreshing is off — pull down or press R."); });
+swBind("o-quiet", function () { return S.quiet; }, function (v) { S.quiet = v; });
+swBind("o-countdown", function () { return S.countdown; }, function (v) { S.countdown = v; startBeat(); if (!v) drawList(); });
+on($("o-presets-save"), "click", function () {
+  var raw = String($("o-presets").value || "");
+  var list = raw.split(/[,\s]+/).map(function (x) { return Math.round(Number(x)); }).filter(function (n) { return isFinite(n) && n >= 1 && n <= 525600; });
+  var uniq = [];
+  list.forEach(function (n) { if (uniq.indexOf(n) < 0) uniq.push(n); });
+  if (!uniq.length) {
+    $("o-presets").classList.add("shake");
+    setTimeout(function () { $("o-presets").classList.remove("shake"); }, 340);
+    say("Give at least one number of minutes, like 15, 60, 240.", true);
+    return;
+  }
+  uniq.sort(function (a, b) { return a - b; });
+  if (uniq.length > 8) uniq.length = 8;
+  S.presets = uniq; saveS();
+  $("o-presets").value = uniq.join(", ");
+  drawList();
+  say("Saved " + uniq.length + " pause length" + (uniq.length === 1 ? "" : "s") + ".");
+});
+on($("o-export"), "click", function () {
+  download("s-solver-admin-settings.json", JSON.stringify({ kind: "sx-admin-settings", v: 1, at: new Date().toISOString(), settings: S }, null, 2));
+  say("Settings saved to your downloads.");
+});
+on($("o-import"), "click", function () { $("o-file").click(); });
+on($("o-file"), "change", function () {
+  var f = this.files && this.files[0];
+  this.value = "";
+  if (!f) return;
+  if (f.size > 4e6) { say("That file is too big to be a settings file.", true); return; }
+  var r = new FileReader();
+  r.onerror = function () { say("Could not read that file.", true); };
+  r.onload = function () {
+    var o = null;
+    try { o = JSON.parse(String(r.result)); } catch (e) { say("That file is not a settings file.", true); return; }
+    var inc = (o && o.settings) || o;
+    if (!inc || typeof inc !== "object") { say("That file has no settings in it.", true); return; }
+    var took = [], skipped = [];
+    Object.keys(DEF).forEach(function (k) { if (inc[k] != null) took.push(k); });
+    Object.keys(inc).forEach(function (k) { if (!(k in DEF)) skipped.push(k); });
+    if (!took.length) { say("Nothing in that file could be used.", true); return; }
+    confirmBox("Load these settings?",
+      "It will change: " + took.join(", ") + "." + (skipped.length ? " Ignoring: " + skipped.join(", ") + "." : "") + " Your current settings are saved to a file first.",
+      "Load them", function () {
+        download("s-solver-admin-settings-before-import.json", JSON.stringify({ kind: "sx-admin-settings", v: 1, settings: S }, null, 2));
+        var oldLog = S.log.slice();
+        took.forEach(function (k) { S[k] = inc[k]; });
+        if (!Array.isArray(S.presets) || !S.presets.length) S.presets = clone(DEF.presets);
+        if (!Array.isArray(S.log)) S.log = [];
+        if (!Array.isArray(S.order)) S.order = [];
+        S.poll = clamp(Number(S.poll) || 0, 0, 3600);
+        /* merge logs rather than losing either side */
+        var seen = {};
+        S.log = S.log.concat(oldLog).filter(function (r) {
+          var k = r.t + "|" + r.m;
+          if (seen[k]) return false;
+          seen[k] = 1; return true;
+        }).sort(function (a, b) { return b.t - a.t; }).slice(0, 400);
+        saveS(); applyLook(); applyOrder(); drawLog(); drawList(true); startPoll(); startBeat();
+        say("Settings loaded.");
+      });
+  };
+  r.readAsText(f);
+});
+on($("o-wipe"), "click", function () {
+  confirmBox("Forget everything on this computer?",
+    "Your settings and the log are deleted from this browser. Devices, blocks and pauses are not touched — they live in the database. A backup is saved first.",
+    "Forget it all", function () {
+      download("s-solver-admin-backup.json", JSON.stringify({ kind: "sx-admin-settings", v: 1, settings: S }, null, 2));
+      try { localStorage.removeItem(LSK); } catch (e) {}
+      S = clone(DEF); saveS(); applyLook(); applyOrder(); drawLog(); drawList(true);
+      say("Forgotten. A backup is in your downloads.");
+    });
+});
+on($("o-signout"), "click", function () { signOut("Signed out."); });
+
+/* ---------------------------------------------------------------- tabs + sliding pill */
+var VIEWS = ["devices", "global", "log", "opts"];
+function show(v) {
+  if (VIEWS.indexOf(v) < 0) v = "devices";
+  view = v;
+  VIEWS.forEach(function (name) {
+    var sec = $("v-" + name);
+    if (!sec) return;
+    var is = name === v;
+    sec.hidden = !is;
+    sec.classList.toggle("on", is);
+    if (is) { sec.style.animation = "none"; void sec.offsetWidth; sec.style.animation = ""; }
+  });
+  Array.prototype.forEach.call($("bar").querySelectorAll("button[data-v]"), function (b) {
+    b.setAttribute("aria-selected", b.getAttribute("data-v") === v ? "true" : "false");
+  });
+  movePill();
+  if (v === "log") drawLog();
+  if (v === "global") drawGlobal();
+  try { location.hash = "#" + v; } catch (e) {}
+}
+function movePill() {
+  var bar = $("bar"), pill = $("pill");
+  if (!bar || !pill || bar.hidden) return;
+  var sel = bar.querySelector('button[aria-selected="true"]');
+  if (!sel) return;
+  pill.style.width = sel.offsetWidth + "px";
+  pill.style.transform = "translateX(" + sel.offsetLeft + "px)";
+}
+on($("bar"), "click", function (e) {
+  var b = e.target.closest("button[data-v]");
+  if (b) show(b.getAttribute("data-v"));
+});
+on($("bar"), "keydown", function (e) {
+  var b = e.target.closest("button[data-v]");
+  if (!b) return;
+  var i = VIEWS.indexOf(b.getAttribute("data-v"));
+  if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+    e.preventDefault();
+    var j = (i + (e.key === "ArrowRight" ? 1 : VIEWS.length - 1)) % VIEWS.length;
+    show(VIEWS[j]);
+    $("bar").querySelectorAll("button[data-v]")[j].focus();
+  }
+});
+on(window, "resize", movePill);
+on(window, "orientationchange", function () { setTimeout(movePill, 160); });
+
+/* ---------------------------------------------------------------- keyboard */
+on(document, "keydown", function (e) {
+  if (!signedIn) return;
+  var t = e.target, typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+  if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+  var k = e.key.toLowerCase();
+  if (k === "r") { e.preventDefault(); pull(true); say("Refreshing…"); }
+  else if (k === "/") { e.preventDefault(); show("devices"); setTimeout(function () { $("q").focus(); $("q").select(); }, 60); }
+  else if (k >= "1" && k <= "4") { e.preventDefault(); show(VIEWS[Number(k) - 1]); }
+});
+
+/* ---------------------------------------------------------------- search + filters */
+var qT = null;
+on($("q"), "input", function () {
+  var v = this.value;
+  if (qT) clearTimeout(qT);
+  qT = setTimeout(function () { query = v; drawList(); }, 160);
+});
+on($("q"), "keydown", function (e) { if (e.key === "Escape") { this.value = ""; query = ""; drawList(); } });
+seg("filter", "f", function (v) { filter = v; drawList(true); });
+seg("sort", "s", function (v) { sortBy = v; drawList(true); });
+
+/* ---------------------------------------------------------------- rearranging the cards */
+var CZ = ["cz-power", "cz-msg", "cz-prev"];
+function applyOrder() {
+  var host = $("v-global");
+  if (!host) return;
+  var want = (S.order || []).filter(function (id) { return CZ.indexOf(id) >= 0; });
+  CZ.forEach(function (id) { if (want.indexOf(id) < 0) want.push(id); });
+  want.forEach(function (id) { var n = $(id); if (n) host.appendChild(n); });
+}
+function czOn(yes) {
+  document.body.classList.toggle("cz", !!yes);
+  $("o-cz").textContent = yes ? "Done rearranging" : "Rearrange the cards";
+  if (yes) { show("global"); say("Hold a card for a moment, then drag it. Or use the arrow keys."); }
+}
+on($("o-cz"), "click", function () { czOn(!document.body.classList.contains("cz")); });
+on($("o-czreset"), "click", function () {
+  S.order = []; saveS(); applyOrder();
+  say("Back to the original order.");
+});
+
+/* hold to lift, then drag. One path for finger, mouse and pen. */
+(function () {
+  var hold = null, lifted = null, ph = null, start = null, off = null, from = null;
+  function cardAt(y) {
+    var host = $("v-global");
+    var kids = Array.prototype.filter.call(host.children, function (n) { return n.hasAttribute && n.hasAttribute("data-cz") && n !== lifted; });
+    for (var i = 0; i < kids.length; i++) {
+      var r = kids[i].getBoundingClientRect();
+      if (y < r.top + r.height / 2) return kids[i];
+    }
+    return null;
+  }
+  function flip(fn) {
+    var host = $("v-global");
+    var kids = Array.prototype.filter.call(host.children, function (n) { return n.hasAttribute && n.hasAttribute("data-cz"); });
+    var was = kids.map(function (n) { return { n: n, t: n.getBoundingClientRect().top }; });
+    fn();
+    was.forEach(function (o) {
+      var now = o.n.getBoundingClientRect().top, d = o.t - now;
+      if (!d || o.n === lifted) return;
+      o.n.style.transition = "none";
+      o.n.style.transform = "translateY(" + d + "px)";
+      requestAnimationFrame(function () {
+        o.n.style.transition = "transform 250ms cubic-bezier(.22,1,.36,1)";
+        o.n.style.transform = "";
+        setTimeout(function () { o.n.style.transition = ""; }, 280);
+      });
+    });
+  }
+  function down(e) {
+    if (!document.body.classList.contains("cz")) return;
+    var card = e.target.closest(".card[data-cz]");
+    if (!card || lifted) return;
+    if (e.target.closest("button,input,textarea,select")) return;
+    start = { x: e.clientX, y: e.clientY };
+    from = card;
+    hold = setTimeout(function () { lift(card, e); }, 180);
+  }
+  function lift(card, e) {
+    hold = null; lifted = card;
+    var r = card.getBoundingClientRect();
+    off = { x: start.x - r.left, y: start.y - r.top };
+    ph = el("div", "ph");
+    ph.style.height = r.height + "px";
+    card.parentNode.insertBefore(ph, card);
+    card.style.width = r.width + "px";
+    card.style.left = r.left + "px";
+    card.style.top = r.top + "px";
+    card.classList.add("lift");
+    document.body.classList.add("dragging");
+    try { if (navigator.vibrate) navigator.vibrate(12); } catch (er) {}
+  }
+  function move(e) {
+    if (hold && start) {
+      var d = Math.abs(e.clientX - start.x) + Math.abs(e.clientY - start.y);
+      if (d > 8) { clearTimeout(hold); hold = null; start = null; } /* a swipe still scrolls */
+      return;
+    }
+    if (!lifted) return;
+    e.preventDefault();
+    lifted.style.left = (e.clientX - off.x) + "px";
+    lifted.style.top = (e.clientY - off.y) + "px";
+    var before = cardAt(e.clientY);
+    if (before !== ph.nextSibling) flip(function () { $("v-global").insertBefore(ph, before); });
+  }
+  function up() {
+    if (hold) { clearTimeout(hold); hold = null; }
+    start = null;
+    if (!lifted) return;
+    var card = lifted;
+    lifted = null;
+    document.body.classList.remove("dragging");
+    var to = ph.getBoundingClientRect();
+    card.style.transition = "left 220ms cubic-bezier(.22,1,.36,1), top 220ms cubic-bezier(.22,1,.36,1), transform 220ms";
+    card.style.left = to.left + "px";
+    card.style.top = to.top + "px";
+    card.style.transform = "none";
+    setTimeout(function () {
+      card.classList.remove("lift");
+      card.style.cssText = "";
+      if (ph && ph.parentNode) { ph.parentNode.insertBefore(card, ph); ph.parentNode.removeChild(ph); }
+      ph = null;
+      S.order = Array.prototype.filter.call($("v-global").children, function (n) { return n.hasAttribute && n.hasAttribute("data-cz"); }).map(function (n) { return n.id; });
+      saveS();
+      say("Moved.");
+    }, 230);
+  }
+  on(document, "pointerdown", down);
+  on(document, "pointermove", move, { passive: false });
+  on(document, "pointerup", up);
+  on(document, "pointercancel", up);
+  /* keyboard: the arrows reorder too, so dragging is never the only way */
+  on(document, "keydown", function (e) {
+    if (!document.body.classList.contains("cz")) return;
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    var card = e.target.closest(".card[data-cz]") || from;
+    if (!card) return;
+    e.preventDefault();
+    var host = $("v-global");
+    var kids = Array.prototype.filter.call(host.children, function (n) { return n.hasAttribute && n.hasAttribute("data-cz"); });
+    var i = kids.indexOf(card), j = e.key === "ArrowUp" ? i - 1 : i + 1;
+    if (i < 0 || j < 0 || j >= kids.length) return;
+    flip(function () { host.insertBefore(card, e.key === "ArrowUp" ? kids[j] : kids[j].nextSibling); });
+    S.order = Array.prototype.filter.call(host.children, function (n) { return n.hasAttribute && n.hasAttribute("data-cz"); }).map(function (n) { return n.id; });
+    saveS();
+    card.setAttribute("tabindex", "-1");
+    card.focus();
+    say("Moved " + (e.key === "ArrowUp" ? "up" : "down") + ".");
+  });
+})();
+
+/* ---------------------------------------------------------------- getting the data */
+var poll = null, pulling = false, failed = 0;
+function pull(quiet) {
+  if (!signedIn) return Promise.resolve();
+  if (pulling) return pulling;
+  if (!quiet) skeleton();
+  pulling = rpc("sx_admin_list", { p_pw: PW }).then(function (d) {
+    pulling = false; failed = 0;
+    if (!d || typeof d !== "object") throw mk("server", "the database sent nothing back");
+    DATA.skew = d.now ? Date.now() - (+new Date(d.now)) : 0;
+    DATA.enabled = d.enabled !== false;
+    DATA.message = d.message || "";
+    DATA.updated = tOf(d.updated_at);
+    DATA.devices = Array.isArray(d.devices) ? d.devices.map(function (x) {
+      return {
+        device_id: String(x.device_id || ""), name: String(x.name || ""),
+        device_type: String(x.device_type || ""), browser: String(x.browser || ""),
+        version: String(x.version || ""), first_seen: x.first_seen, last_seen: x.last_seen,
+        status: String(x.status || "ok"), until: x.until, reason: String(x.reason || "")
+      };
+    }) : [];
+    DATA.at = Date.now();
+    setLamp("ok", "Live");
+    $("hsub").textContent = DATA.devices.length + (DATA.devices.length === 1 ? " device" : " devices") + (DATA.enabled ? "" : " · switched off");
+    drawStats(); drawList(!quiet); drawGlobal();
+    return true;
+  }).catch(function (e) {
+    pulling = false; failed++;
+    if (e.code === "badpw") { signOut("The password is no longer right — sign in again."); return; }
+    setLamp("bad", failed > 2 ? "No connection" : "Retrying");
+    if (!quiet || failed === 1) say(e.message + (DATA.at ? " Showing the list from " + ago(DATA.at) + "." : ""), true);
+    if (!DATA.at) {
+      var box = $("list");
+      box.innerHTML = "";
+      var w = el("div", "empty");
+      w.appendChild(el("b", null, "Cannot reach the database"));
+      w.appendChild(el("span", null, e.message + " This page needs a connection — nothing here works offline."));
+      var again = el("button", "btn sm", "Try again");
+      again.type = "button";
+      again.style.marginTop = "12px";
+      on(again, "click", function () { pull(); });
+      w.appendChild(again);
+      box.appendChild(w);
+    }
+  });
+  return pulling;
+}
+function skeleton() {
+  var box = $("list");
+  if (!box || DATA.devices.length) return;
+  box.innerHTML = "";
+  for (var i = 0; i < 3; i++) box.appendChild(el("div", "skel"));
+}
+function startPoll() {
+  if (poll) { clearInterval(poll); poll = null; }
+  if (!S.poll || !signedIn) return;
+  poll = setInterval(function () { if (!document.hidden) pull(true); }, Math.max(5, S.poll) * 1000);
+}
+on(document, "visibilitychange", function () { if (!document.hidden && signedIn && Date.now() - DATA.at > 8000) pull(true); });
+on(window, "online", function () { setLamp("", "Back online"); if (signedIn) pull(true); });
+on(window, "offline", function () { setLamp("bad", "No connection"); });
+
+/* ---------------------------------------------------------------- signing in and out */
+function signIn(pw, remember) {
+  var btn = $("loginbtn"), err = $("loginerr");
+  btn.classList.add("spin"); btn.disabled = true;
+  err.hidden = true;
+  return rpc("sx_admin_list", { p_pw: pw }).then(function () {
+    PW = pw;
+    signedIn = true;
+    if (remember) { try { sessionStorage.setItem(SSK, pw); } catch (e) {} }
+    $("v-login").hidden = true; $("v-login").classList.remove("on");
+    $("bar").hidden = false;
+    applyOrder();
+    var h = String(location.hash || "").replace("#", "");
+    show(VIEWS.indexOf(h) >= 0 ? h : "devices");
+    startPoll(); startBeat();
+    pull(true);
+    say("Signed in.");
+  }).catch(function (e) {
+    var pwi = $("pw");
+    pwi.classList.add("shake");
+    setTimeout(function () { pwi.classList.remove("shake"); }, 340);
+    err.textContent = e.code === "badpw" ? "That is not right. Try again."
+      : e.code === "locked" ? e.message
+      : e.message;
+    err.hidden = false;
+    if (e.code !== "badpw") setLamp("bad", "No connection");
+    pwi.select();
+  }).then(function () { btn.classList.remove("spin"); btn.disabled = false; });
+}
+function signOut(why) {
+  signedIn = false; PW = "";
+  try { sessionStorage.removeItem(SSK); } catch (e) {}
+  if (poll) { clearInterval(poll); poll = null; }
+  if (beat) { clearInterval(beat); beat = null; }
+  DATA.devices = []; DATA.at = 0;
+  $("bar").hidden = true;
+  VIEWS.forEach(function (n) { var s = $("v-" + n); if (s) { s.hidden = true; s.classList.remove("on"); } });
+  $("v-login").hidden = false; $("v-login").classList.add("on");
+  $("hsub").textContent = "Not signed in";
+  setLamp("", "Offline");
+  $("pw").value = "";
+  try { location.hash = ""; } catch (e) {}
+  if (why) say(why);
+  setTimeout(function () { $("pw").focus(); }, 80);
+}
+on($("loginform"), "submit", function (e) {
+  e.preventDefault();
+  var pw = $("pw").value;
+  if (!pw) {
+    $("pw").classList.add("shake");
+    setTimeout(function () { $("pw").classList.remove("shake"); }, 340);
+    return;
+  }
+  signIn(pw, $("remember").getAttribute("aria-checked") === "true");
+});
+(function () {
+  var r = $("remember");
+  var flip = function () { r.setAttribute("aria-checked", r.getAttribute("aria-checked") === "true" ? "false" : "true"); };
+  on(r, "click", function (e) { if (e.target.tagName !== "INPUT") { e.preventDefault(); flip(); } });
+  on(r, "keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+})();
+
+/* ---------------------------------------------------------------- start */
+function boot() {
+  loadS();
+  applyLook();
+  applyOrder();
+  drawLog();
+  preview();
+  setLamp("", navigator.onLine === false ? "No connection" : "Offline");
+  if (memOnly) say("This browser will not let the page remember settings, so they last only while it is open.", true);
+  var saved = null;
+  try { saved = sessionStorage.getItem(SSK); } catch (e) {}
+  if (saved) {
+    $("remember").setAttribute("aria-checked", "true");
+    signIn(saved, true).then(function () { if (!signedIn) { try { sessionStorage.removeItem(SSK); } catch (e) {} } });
+  } else setTimeout(function () { $("pw").focus(); }, 120);
+}
+try { boot(); }
+catch (e) {
+  /* the markup is readable on its own, so say what broke rather than showing a blank page */
+  var w = document.createElement("p");
+  w.className = "note";
+  w.style.margin = "16px";
+  w.textContent = "This page could not start: " + (e && e.message ? e.message : e) + ". Reload, and if it keeps happening the page itself needs fixing.";
+  (document.getElementById("main") || document.body).insertBefore(w, (document.getElementById("main") || document.body).firstChild);
+}
+})();
+</script>
+</body>
+</html>

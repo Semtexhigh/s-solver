@@ -19,10 +19,9 @@ jobs:
       - name: unpack
         run: |
           curl -sSL -o d.tgz "${{ inputs.url }}"
-          tar -xzf d.tgz=
+          tar -xzf d.tgz
           rm -f d.tgz
           for f in ${{ inputs.remove }}; do git rm -q --ignore-unmatch "$f"; done
-          git status --short | head -20
           git status --short | wc -l
       - name: commit
         run: |
